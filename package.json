@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "browser-env": "^3.3.0",
+    "node-canvas-webgl": "^0.2.7",
+    "three": "^0.139.2"
+  }
+}
