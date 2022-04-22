@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { fromEvent, animationFrames } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { io } from 'socket.io-client';
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 // const loaderFBX = new FBXLoader();
 import {
@@ -81,6 +82,13 @@ function App() {
       renderer.setSize(view.clientWidth, view.clientHeight);
       render();
     }
+
+    // const socket = io('/ws');
+    const socket = io('ws://127.0.0.1:3030');
+    socket.on('connect', () => {
+      console.log('💖', socket.id);
+      socket.emit('cain');
+    });
   }, []);
 
   return <div id="App"></div>;
