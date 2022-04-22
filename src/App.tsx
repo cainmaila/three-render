@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { fromEvent, animationFrames } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 // const loaderFBX = new FBXLoader();
 import {
@@ -24,7 +24,11 @@ const CANVAS_DOM = 'App';
 
 const clock = new Clock();
 function App() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [image, setImage] = useState('');
+  const [socket, setSocket] = useState<Socket | null>(null);
   useEffect(() => {
+    if (!canvasRef.current) throw new Error('no view');
     const view =
       document.getElementById(CANVAS_DOM) || document.createElement('div');
     const scene = new Scene();
@@ -35,12 +39,12 @@ function App() {
       1000,
     );
     camera.position.set(0, 0, 200);
-    const renderer = new WebGLRenderer();
+    const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     renderer.setClearColor(0x888888);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
-    view.appendChild(renderer.domElement);
+    // view.appendChild(renderer.domElement);
 
     const light = new AmbientLight(0x888888); // soft white light
     scene.add(light);
@@ -72,6 +76,7 @@ function App() {
     function render() {
       controls.update();
       renderer.render(scene, camera);
+      setImage(canvasRef.current?.toDataURL('image/webp', 0.5) || '');
     }
 
     fromEvent(window, 'resize').subscribe(resize);
@@ -87,11 +92,19 @@ function App() {
     const socket = io('ws://127.0.0.1:3030');
     socket.on('connect', () => {
       console.log('💖', socket.id);
-      socket.emit('cain');
+      setSocket(socket);
     });
   }, []);
 
-  return <div id="App"></div>;
+  useEffect(() => {
+    socket?.emit('img', image);
+  }, [image, socket]);
+
+  return (
+    <div id="App">
+      <canvas ref={canvasRef} width="100%" height="100%"></canvas>
+    </div>
+  );
 }
 
 export default App;
