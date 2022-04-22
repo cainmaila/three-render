@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { fromEvent, animationFrames } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { fromEvent, animationFrames, merge } from 'rxjs';
+import { auditTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { io, Socket } from 'socket.io-client';
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
@@ -76,7 +76,7 @@ function App() {
     function render() {
       controls.update();
       renderer.render(scene, camera);
-      setImage(canvasRef.current?.toDataURL('image/webp', 0.5) || '');
+      // setImage(canvasRef.current?.toDataURL('image/webp', 0.5) || '');
     }
 
     fromEvent(window, 'resize').subscribe(resize);
@@ -86,6 +86,29 @@ function App() {
       camera.updateProjectionMatrix();
       renderer.setSize(view.clientWidth, view.clientHeight);
       render();
+    }
+
+    //renderer events
+    merge(
+      fromEvent(window, 'pointerdown').pipe(
+        switchMap(() =>
+          fromEvent(window, 'pointermove').pipe(
+            auditTime(50),
+            takeUntil(fromEvent(window, 'pointerup')),
+          ),
+        ),
+      ),
+      fromEvent(window, 'mousewheel').pipe(auditTime(50)),
+    )
+      .pipe(map(() => cameraState()))
+      .subscribe(console.log);
+
+    function cameraState() {
+      return {
+        matrix: camera.matrix.toArray(),
+        aspect: camera.aspect,
+        fov: camera.fov,
+      };
     }
 
     // const socket = io('/ws');
