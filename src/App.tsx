@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { fromEvent, animationFrames } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+const loaderFBX = new FBXLoader();
 import {
   Scene,
   PerspectiveCamera,
@@ -13,11 +15,14 @@ import {
 } from 'three';
 import './App.css';
 
+const CANVAS_DOM = 'App';
+const MODEL_PATH = 'model/TciBio_20220311.fbx';
+
 const clock = new Clock();
 function App() {
   useEffect(() => {
     const view =
-      document.getElementById('App') || document.createElement('div');
+      document.getElementById(CANVAS_DOM) || document.createElement('div');
     const scene = new Scene();
     const camera = new PerspectiveCamera(
       75,
@@ -27,6 +32,7 @@ function App() {
     );
     camera.position.set(0, 0, 200);
     const renderer = new WebGLRenderer();
+    renderer.setClearColor(0x888888);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
@@ -34,7 +40,7 @@ function App() {
 
     const light = new AmbientLight(0x888888); // soft white light
     scene.add(light);
-    const light2 = new PointLight(0xffffff, 1, 400);
+    const light2 = new PointLight(0xffffff, 1, 4000);
     light2.position.set(100, 0, 200);
     light2.castShadow = true;
     scene.add(light2);
@@ -42,6 +48,11 @@ function App() {
     //controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0, 0);
+
+    loaderFBX.load(MODEL_PATH, (model) => {
+      model.scale.set(0.01, 0.01, 0.01);
+      scene.add(model);
+    });
 
     resize();
 
