@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { fromEvent, animationFrames } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-const loaderFBX = new FBXLoader();
+// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+// const loaderFBX = new FBXLoader();
 import {
   Scene,
   PerspectiveCamera,
@@ -12,11 +12,14 @@ import {
   AmbientLight,
   PointLight,
   PCFSoftShadowMap,
+  BoxGeometry,
+  Mesh,
+  MeshLambertMaterial,
 } from 'three';
 import './App.css';
 
 const CANVAS_DOM = 'App';
-const MODEL_PATH = 'model/TciBio_20220311.fbx';
+// const MODEL_PATH = 'model/TciBio_20220311.fbx';
 
 const clock = new Clock();
 function App() {
@@ -49,10 +52,15 @@ function App() {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0, 0);
 
-    loaderFBX.load(MODEL_PATH, (model) => {
-      model.scale.set(0.01, 0.01, 0.01);
-      scene.add(model);
-    });
+    // loaderFBX.load(MODEL_PATH, (model) => {
+    //   model.scale.set(0.01, 0.01, 0.01);
+    //   scene.add(model);
+    // });
+
+    const geometry = new BoxGeometry(100, 100, 100);
+    const material = new MeshLambertMaterial({ color: 0x008899 });
+    const cube = new Mesh(geometry, material);
+    scene.add(cube);
 
     resize();
 
