@@ -50,7 +50,8 @@ function Render() {
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     rendererRef.current = renderer;
     renderer.setClearColor(0x888888);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(1);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
 
@@ -88,6 +89,7 @@ function Render() {
     camera.matrixWorld.fromArray(cameraState.matrix);
     camera.aspect = cameraState.aspect;
     camera.fov = cameraState.fov;
+    camera.updateProjectionMatrix();
     renderer.setSize(cameraState.screen.width, cameraState.screen.height);
     renderer.render(sceneRef.current, camera);
     setImage(canvasRef.current?.toDataURL('image/webp', 0.5) || '');

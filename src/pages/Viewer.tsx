@@ -68,7 +68,8 @@ function Viewer() {
     camera.position.set(0, 0, 200);
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     renderer.setClearColor(0x888888);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(1);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
     // view.appendChild(renderer.domElement);
@@ -112,7 +113,7 @@ function Viewer() {
       camera.aspect = view.clientWidth / view.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(view.clientWidth, view.clientHeight);
-      render();
+      // render();
       window.dispatchEvent(new Event('resized'));
     }
 
