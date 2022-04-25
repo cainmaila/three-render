@@ -43,6 +43,13 @@ export interface I_CameraState {
 }
 
 function Viewer() {
+  const loading = {
+    ...style.pointerEventsNone,
+    ...style.flexCenter,
+    ...style.full,
+    fontweight: 'bold',
+  };
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
   const [cameraState, setCameraState] = useState<I_CameraState>({
@@ -173,12 +180,16 @@ function Viewer() {
   return (
     <div id="App" style={style.full}>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
-      <img
-        style={style.pointerEventsNone}
-        src={image}
-        width="100%"
-        height="100%"
-      ></img>
+      {image ? (
+        <img
+          style={style.pointerEventsNone}
+          src={image}
+          width="100%"
+          height="100%"
+        ></img>
+      ) : (
+        <div style={loading}>loading...</div>
+      )}
     </div>
   );
 }
