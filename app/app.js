@@ -16,7 +16,7 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('😀 a user connected');
   socket.on('img', (data) => {
-    console.log(data);
+    socket.broadcast.emit('img', data);
   });
   socket.on('cameraState', (data) => {
     socket.broadcast.emit('cameraState', data);

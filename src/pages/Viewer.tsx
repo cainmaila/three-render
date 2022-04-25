@@ -102,8 +102,7 @@ function Viewer() {
 
     function render() {
       controls.update();
-      renderer.render(scene, camera);
-      // setImage(canvasRef.current?.toDataURL('image/webp', 0.5) || '');
+      // renderer.render(scene, camera);
     }
 
     fromEvent(window, 'resize').subscribe(resize);
@@ -151,6 +150,9 @@ function Viewer() {
       console.log('💖', socket.id);
       setSocket(socket);
     });
+    socket.on('img', (img) => {
+      setImage(img);
+    });
   }, []);
 
   useEffect(() => {
@@ -160,6 +162,12 @@ function Viewer() {
   return (
     <div id="App" style={style.full}>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
+      <img
+        style={style.pointerEventsNone}
+        src={image}
+        width="100%"
+        height="100%"
+      ></img>
     </div>
   );
 }

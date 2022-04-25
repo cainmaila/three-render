@@ -86,6 +86,7 @@ function Render() {
     camera.fov = cameraState.fov;
     renderer.setSize(cameraState.screen.width, cameraState.screen.height);
     renderer.render(sceneRef.current, camera);
+    setImage(canvasRef.current?.toDataURL('image/webp', 0.5) || '');
   }, [cameraState]);
 
   useEffect(() => {
