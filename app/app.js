@@ -18,6 +18,10 @@ io.on('connection', (socket) => {
   socket.on('img', (data) => {
     console.log(data);
   });
+  socket.on('cameraState', (data) => {
+    socket.broadcast.emit('cameraState', data);
+  });
+
   socket.on('disconnect', () => {
     console.log('🤬 user disconnected');
   });
