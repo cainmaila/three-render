@@ -39,6 +39,7 @@ export interface I_CameraState {
     width: number;
     height: number;
   };
+  id?: string;
 }
 
 function Viewer() {

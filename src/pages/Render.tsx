@@ -11,20 +11,24 @@ import {
   AmbientLight,
   PointLight,
   PCFSoftShadowMap,
-  BoxGeometry,
-  Mesh,
-  MeshLambertMaterial,
-  Matrix4,
 } from 'three';
 import { I_CameraState } from './Viewer';
 
 const CANVAS_DOM = 'App';
 const MODEL_PATH = 'model/TciBio_20220311.fbx';
 
+export interface I_ImageMeta {
+  image: string;
+  id: string;
+}
+
 const clock = new Clock();
 function Render() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [image, setImage] = useState('');
+  const [imageMeta, setImageMeta] = useState<I_ImageMeta>({
+    image: '',
+    id: '',
+  });
   const [socket, setSocket] = useState<Socket | null>(null);
   const [cameraState, setCameraState] = useState<I_CameraState>({
     matrix: [],
@@ -92,12 +96,15 @@ function Render() {
     camera.updateProjectionMatrix();
     renderer.setSize(cameraState.screen.width, cameraState.screen.height);
     renderer.render(sceneRef.current, camera);
-    setImage(canvasRef.current?.toDataURL('image/webp', 0.5) || '');
+    setImageMeta({
+      image: canvasRef.current?.toDataURL('image/webp', 0.5) || '',
+      id: cameraState.id || '',
+    });
   }, [cameraState]);
 
   useEffect(() => {
-    socket?.emit('img', image);
-  }, [image, socket]);
+    socket?.emit('img', imageMeta);
+  }, [imageMeta, socket]);
 
   return (
     <div id="App" style={style.full}>

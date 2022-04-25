@@ -13,20 +13,26 @@ const io = new Server(server, {
   },
 });
 
+const socketMap = new Map();
+
 io.on('connection', (socket) => {
-  console.log('😀 a user connected');
+  console.log('😀 a user connected', socket.id);
+  socketMap.set(socket.id, socket);
+  let targetSocket;
   socket.on('img', (data) => {
-    socket.broadcast.emit('img', data);
+    targetSocket = socketMap.get(data.id);
+    targetSocket?.emit('img', data.image);
   });
   socket.on('cameraState', (data) => {
-    socket.broadcast.emit('cameraState', data);
+    socket.broadcast.emit('cameraState', { ...data, id: socket.id });
   });
 
   socket.on('disconnect', () => {
-    console.log('🤬 user disconnected');
+    socketMap.delete(socket.id);
+    console.log('🤬 user disconnected', socket.id);
   });
   socket.on('disconnecting', (reason) => {
-    console.log('disconnecting!!');
+    console.log('disconnecting!!', reason);
   });
 });
 
