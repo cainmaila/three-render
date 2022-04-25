@@ -89,11 +89,11 @@ function Viewer() {
     //   scene.add(model);
     // });
 
-    const geometry = new BoxGeometry(100, 100, 100);
-    const material = new MeshLambertMaterial({ color: 0x008899 });
-    material.wireframe = true;
-    const cube = new Mesh(geometry, material);
-    scene.add(cube);
+    // const geometry = new BoxGeometry(100, 100, 100);
+    // const material = new MeshLambertMaterial({ color: 0x008899 });
+    // material.wireframe = true;
+    // const cube = new Mesh(geometry, material);
+    // scene.add(cube);
 
     resize();
 
