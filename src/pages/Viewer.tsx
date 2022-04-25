@@ -112,6 +112,7 @@ function Viewer() {
       camera.updateProjectionMatrix();
       renderer.setSize(view.clientWidth, view.clientHeight);
       render();
+      window.dispatchEvent(new Event('resized'));
     }
 
     //renderer events
@@ -125,6 +126,7 @@ function Viewer() {
         ),
       ),
       fromEvent(window, 'mousewheel').pipe(auditTime(50)),
+      fromEvent(window, 'resized').pipe(auditTime(50)),
     )
       .pipe(
         startWith(cameraState()),

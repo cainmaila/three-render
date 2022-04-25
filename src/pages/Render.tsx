@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-// const loaderFBX = new FBXLoader();
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+const loaderFBX = new FBXLoader();
 import * as style from './style';
 import {
   Scene,
@@ -19,7 +19,7 @@ import {
 import { I_CameraState } from './Viewer';
 
 const CANVAS_DOM = 'App';
-// const MODEL_PATH = 'model/TciBio_20220311.fbx';
+const MODEL_PATH = 'model/TciBio_20220311.fbx';
 
 const clock = new Clock();
 function Render() {
@@ -61,10 +61,15 @@ function Render() {
     light2.castShadow = true;
     scene.add(light2);
 
-    const geometry = new BoxGeometry(100, 100, 100);
-    const material = new MeshLambertMaterial({ color: 0x008899 });
-    const cube = new Mesh(geometry, material);
-    scene.add(cube);
+    loaderFBX.load(MODEL_PATH, (model) => {
+      model.scale.set(0.01, 0.01, 0.01);
+      scene.add(model);
+    });
+
+    // const geometry = new BoxGeometry(100, 100, 100);
+    // const material = new MeshLambertMaterial({ color: 0x008899 });
+    // const cube = new Mesh(geometry, material);
+    // scene.add(cube);
 
     // const socket = io('/ws');
     const socket = io('ws://127.0.0.1:3030');
