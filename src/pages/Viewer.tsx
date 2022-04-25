@@ -154,8 +154,7 @@ function Viewer() {
       };
     }
 
-    // const socket = io('/ws');
-    const socket = io('ws://127.0.0.1:3030');
+    const socket = io();
     socket.on('connect', () => {
       console.log('💖', socket.id);
       setSocket(socket);
