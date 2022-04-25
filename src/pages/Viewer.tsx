@@ -6,6 +6,7 @@ import {
   startWith,
   switchMap,
   takeUntil,
+  tap,
 } from 'rxjs/operators';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { io, Socket } from 'socket.io-client';
@@ -116,6 +117,7 @@ function Viewer() {
     }
 
     //renderer events
+    let endTimeTag: NodeJS.Timeout;
     merge(
       fromEvent(window, 'pointerdown').pipe(
         switchMap(() =>
@@ -129,19 +131,25 @@ function Viewer() {
       fromEvent(window, 'resized').pipe(auditTime(50)),
     )
       .pipe(
-        startWith(cameraState()),
-        map(() => cameraState()),
+        startWith(cameraState(0.5)),
+        map(() => cameraState(0.5)),
+        tap(() => {
+          clearTimeout(endTimeTag);
+          endTimeTag = setTimeout(() => {
+            setCameraState(cameraState(1)); //高級品質
+          }, 200);
+        }),
       )
       .subscribe((data) => setCameraState(data));
 
-    function cameraState(): I_CameraState {
+    function cameraState(size = 1): I_CameraState {
       return {
         matrix: camera.matrix.toArray(),
         aspect: camera.aspect,
         fov: camera.fov,
         screen: {
-          width: view.clientWidth,
-          height: view.clientHeight,
+          width: view.clientWidth * size,
+          height: view.clientHeight * size,
         },
       };
     }
