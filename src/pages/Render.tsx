@@ -97,7 +97,7 @@ function Render() {
     renderer.setSize(cameraState.screen.width, cameraState.screen.height);
     renderer.render(sceneRef.current, camera);
     setImageMeta({
-      image: canvasRef.current?.toDataURL('image/webp', 0.5) || '',
+      image: canvasRef.current?.toDataURL('image/webp', 0.8) || '',
       id: cameraState.id || '',
     });
   }, [cameraState]);
