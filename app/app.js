@@ -41,6 +41,14 @@ io.on('connection', (socket) => {
   socket.on('cameraState', (data) => {
     renderSocket?.emit('cameraState', { ...data, id: socket.id });
   });
+  // box meta
+  socket.on('getBoxs', () => {
+    renderSocket?.emit('getBoxs', { id: socket.id });
+  });
+  socket.on('boxs', ({ id, boxs }) => {
+    targetSocket = socketMap.get(id);
+    targetSocket?.emit('boxs', { boxs });
+  });
 });
 
 server.listen(PORT, () => {

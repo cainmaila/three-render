@@ -158,10 +158,14 @@ function Viewer() {
     socket.on('img', (img) => {
       setImage(img);
     });
+    socket.on('boxs', ({ boxs }) => {
+      console.log('boxs', boxs);
+    });
   }, []);
 
   useEffect(() => {
     socket?.emit('client');
+    socket?.emit('getBoxs');
   }, [socket]);
 
   useEffect(() => {

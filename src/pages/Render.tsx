@@ -7,15 +7,11 @@ import {
   Scene,
   PerspectiveCamera,
   WebGLRenderer,
-  Clock,
   AmbientLight,
   PointLight,
   PCFSoftShadowMap,
 } from 'three';
-import {
-  generateBoundingBoxMeta,
-  generateBoundingBox,
-} from '../tools/meshTools';
+import { generateBoundingBoxMeta } from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
 
 const CANVAS_DOM = 'App';
@@ -42,9 +38,6 @@ function Render() {
       height: 0,
     },
   });
-  const viewRef = useRef(
-    document.getElementById(CANVAS_DOM) || document.createElement('div'),
-  );
   const sceneRef = useRef(new Scene());
   const cameraRef = useRef(new PerspectiveCamera(75, 1, 0.1, 999999));
   const rendererRef = useRef<WebGLRenderer>();
@@ -84,6 +77,13 @@ function Render() {
     });
     socket.on('cameraState', (cameraState) => {
       setCameraState(cameraState);
+    });
+    socket.on('getBoxs', ({ id }) => {
+      //索取box meta
+      socket.emit('boxs', {
+        id,
+        boxs: boxsRef.current,
+      });
     });
   }, []);
 
