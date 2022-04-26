@@ -15,6 +15,7 @@ import { generateBoundingBox } from '../tools/meshTools';
 import ReaderImg from './viewer/ReaderImg';
 import * as style from './style';
 import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from 'three';
+import RenderUi from './viewer/RenderUi';
 
 const CANVAS_DOM = 'App';
 
@@ -113,7 +114,6 @@ function Viewer() {
         }),
       )
       .subscribe((data) => {
-        console.log(111, data);
         setCameraState(data);
       });
 
@@ -156,6 +156,7 @@ function Viewer() {
     <div id="App" style={style.full}>
       <ReaderImg image={image} rending={rending}></ReaderImg>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
+      <RenderUi />
     </div>
   );
 }
