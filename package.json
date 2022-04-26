@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "start": "cross-env NODE_ENV=production && node app/app.js",
+    "start": "cross-env NODE_ENV=production node app/app.js",
     "app": "nodemon app/app.js",
     "dev": "vite",
     "build": "tsc && vite build",
@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "express": "^4.17.3",
+    "puppeteer": "^13.6.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",

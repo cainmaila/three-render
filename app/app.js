@@ -30,15 +30,17 @@ const io = new Server(server, {
 
 const socketMap = new Map();
 let renderSocket = null; //Render服務頁面
+let renderBrowser = null; //Render page
 
 io.on('connection', (socket) => {
   console.log('😀 a user connected', socket.id);
-
   let targetSocket;
   socket.on('render', () => {
+    console.log('🤟 render connected', socket.id);
     renderSocket = socket; //前端渲染連線
     socket.on('disconnect', () => {
       renderSocket = null;
+      renderBrowser && renderBrowser.close();
       console.log('🤬 render disconnected!');
     });
   });
@@ -69,3 +71,12 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log(`Server Listening on port ${PORT}`);
 });
+
+if (process.env.NODE_ENV === 'production') {
+  const puppeteer = require('puppeteer');
+  puppeteer.launch().then(async (browser) => {
+    const page = await browser.newPage();
+    renderBrowser = browser;
+    await page.goto('http://localhost:3030/render');
+  });
+}
