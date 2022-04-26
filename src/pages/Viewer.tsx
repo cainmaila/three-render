@@ -46,13 +46,18 @@ function Viewer() {
   });
   const [socket, setSocket] = useState<Socket | null>(null);
   const [rending, setRedning] = useState(false); //是否渲染中
+  const [value, setValue] = useState('middle'); //渲染品質
+  const renderQualityRef = useRef('middle');
+  useEffect(() => {
+    renderQualityRef.current = value;
+  }, [value]);
   useEffect(() => {
     if (!canvasRef.current) throw new Error('no view');
     const view =
       document.getElementById(CANVAS_DOM) || document.createElement('div');
     const scene = new Scene();
     const camera = new PerspectiveCamera(
-      75,
+      40,
       view.clientWidth / view.clientHeight,
       0.1,
       999999,
@@ -93,7 +98,7 @@ function Viewer() {
       fromEvent(window, 'pointerdown').pipe(
         switchMap(() =>
           fromEvent(window, 'pointermove').pipe(
-            auditTime(50),
+            auditTime(33),
             takeUntil(fromEvent(window, 'pointerup')),
           ),
         ),
@@ -103,7 +108,16 @@ function Viewer() {
     )
       .pipe(
         startWith(cameraState(1)),
-        map(() => cameraState(0.5)),
+        map(() => {
+          switch (renderQualityRef.current) {
+            case 'low':
+              return null;
+            case 'hight':
+              return cameraState(1);
+            default:
+              return cameraState(0.5);
+          }
+        }),
         tap(() => {
           setRedning(true);
           clearTimeout(endTimeTag);
@@ -114,7 +128,7 @@ function Viewer() {
         }),
       )
       .subscribe((data) => {
-        setCameraState(data);
+        data ? setCameraState(data) : setImage('');
       });
 
     function cameraState(size = 1): I_CameraState {
@@ -138,7 +152,6 @@ function Viewer() {
       setImage(img);
     });
     socket.on('boxs', ({ boxs }) => {
-      console.log('boxs', boxs);
       generateBoundingBox(boxs, scene);
     });
   }, []);
@@ -154,9 +167,9 @@ function Viewer() {
 
   return (
     <div id="App" style={style.full}>
-      <ReaderImg image={image} rending={rending}></ReaderImg>
+      <ReaderImg image={image} rending={rending && value === 'low'}></ReaderImg>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
-      <RenderUi />
+      <RenderUi setValue={setValue} />
     </div>
   );
 }

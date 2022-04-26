@@ -1,12 +1,18 @@
 import Radio from '@mui/material/Radio';
-import RadioGroup, { useRadioGroup } from '@mui/material/RadioGroup';
+import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Box from '@mui/material/Box/Box';
 
-export default function RowRadioButtonsGroup() {
-  const radioGroup = useRadioGroup();
+export default function RowRadioButtonsGroup({
+  setValue,
+}: {
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const onChange = (e: React.BaseSyntheticEvent) => {
+    setValue(e.target.value);
+  };
   return (
     <Box
       sx={{
@@ -31,6 +37,7 @@ export default function RowRadioButtonsGroup() {
           aria-labelledby="demo-row-radio-buttons-group-label"
           name="row-radio-buttons-group"
           defaultValue="middle"
+          onChange={onChange}
         >
           <FormControlLabel
             value="low"
@@ -41,7 +48,7 @@ export default function RowRadioButtonsGroup() {
                 }}
               />
             }
-            label="低"
+            label="低(BBox)"
           />
           <FormControlLabel
             value="middle"
