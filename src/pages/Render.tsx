@@ -62,13 +62,6 @@ function Render() {
     light2.castShadow = true;
     scene.add(light2);
 
-    loaderFBX.load(MODEL_PATH, (model) => {
-      model.castShadow = true;
-      model.receiveShadow = true;
-      scene.add(model);
-      generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
-    });
-
     const socket = io();
     socket.on('connect', () => {
       console.log('💖', socket.id);
@@ -83,6 +76,15 @@ function Render() {
         id,
         boxs: boxsRef.current,
       });
+    });
+
+    //模型載入
+    loaderFBX.load(MODEL_PATH, (model) => {
+      model.castShadow = true;
+      model.receiveShadow = true;
+      scene.add(model);
+      generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
+      socket.emit('modelReady', { path: MODEL_PATH });
     });
   }, []);
 

@@ -43,6 +43,9 @@ io.on('connection', (socket) => {
       renderBrowser && renderBrowser.close();
       console.log('🤬 render disconnected!');
     });
+    socket.on('modelReady', ({ path }) => {
+      console.log('👍 model Ready', path);
+    });
   });
   socket.on('client', () => {
     socketMap.set(socket.id, socket);
