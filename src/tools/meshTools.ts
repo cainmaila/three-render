@@ -11,6 +11,10 @@ export const generateBoundingBoxMeta = (
   boxs: number[][] = [],
 ) => {
   model.traverse((mesh) => {
+    if (mesh.name === 'Top') {
+      //TODO:偷懶隱藏
+      mesh.visible = false;
+    }
     let box;
     if (mesh instanceof Mesh) {
       box = mesh.geometry?.boundingBox || new Box3().setFromObject(mesh);
