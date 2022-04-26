@@ -10,8 +10,6 @@ import {
 } from 'rxjs/operators';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { io, Socket } from 'socket.io-client';
-// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-// const loaderFBX = new FBXLoader();
 import ReaderImg from './viewer/ReaderImg';
 import * as style from './style';
 import {
@@ -44,13 +42,6 @@ export interface I_CameraState {
 }
 
 function Viewer() {
-  const loading = {
-    ...style.pointerEventsNone,
-    ...style.flexCenter,
-    ...style.full,
-    fontweight: 'bold',
-  };
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
   const [cameraState, setCameraState] = useState<I_CameraState>({
@@ -93,11 +84,6 @@ function Viewer() {
     //controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0, 0);
-
-    // loaderFBX.load(MODEL_PATH, (model) => {
-    //   model.scale.set(0.01, 0.01, 0.01);
-    //   scene.add(model);
-    // });
 
     // const geometry = new BoxGeometry(100, 100, 100);
     // const material = new MeshLambertMaterial({ color: 0x008899 });
