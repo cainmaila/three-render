@@ -161,6 +161,10 @@ function Viewer() {
   }, []);
 
   useEffect(() => {
+    socket?.emit('client');
+  }, [socket]);
+
+  useEffect(() => {
     socket?.emit('cameraState', cameraState);
   }, [cameraState, socket]);
 

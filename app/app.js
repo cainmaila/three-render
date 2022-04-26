@@ -14,25 +14,32 @@ const io = new Server(server, {
 });
 
 const socketMap = new Map();
+let renderSocket = null; //Render服務頁面
 
 io.on('connection', (socket) => {
   console.log('😀 a user connected', socket.id);
-  socketMap.set(socket.id, socket);
+
   let targetSocket;
+  socket.on('render', () => {
+    renderSocket = socket; //前端渲染連線
+    socket.on('disconnect', () => {
+      renderSocket = null;
+      console.log('🤬 render disconnected!');
+    });
+  });
+  socket.on('client', () => {
+    socketMap.set(socket.id, socket);
+    socket.on('disconnect', () => {
+      socketMap.delete(socket.id);
+      console.log('🤬 user disconnected', socket.id);
+    });
+  });
   socket.on('img', (data) => {
     targetSocket = socketMap.get(data.id);
     targetSocket?.emit('img', data.image);
   });
   socket.on('cameraState', (data) => {
-    socket.broadcast.emit('cameraState', { ...data, id: socket.id });
-  });
-
-  socket.on('disconnect', () => {
-    socketMap.delete(socket.id);
-    console.log('🤬 user disconnected', socket.id);
-  });
-  socket.on('disconnecting', (reason) => {
-    console.log('disconnecting!!', reason);
+    renderSocket?.emit('cameraState', { ...data, id: socket.id });
   });
 });
 

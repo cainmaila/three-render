@@ -75,7 +75,6 @@ function Render() {
       model.receiveShadow = true;
       scene.add(model);
       generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
-      generateBoundingBox(boxsRef.current, scene);
     });
 
     const socket = io();
@@ -103,6 +102,10 @@ function Render() {
       id: cameraState.id || '',
     });
   }, [cameraState]);
+
+  useEffect(() => {
+    socket?.emit('render');
+  }, [socket]);
 
   useEffect(() => {
     socket?.emit('img', imageMeta);
