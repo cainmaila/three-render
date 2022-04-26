@@ -1,10 +1,25 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const path = require('path');
+const compression = require('compression');
+function shouldCompress(req, res) {
+  if (req.headers['x-no-compression']) {
+    // don't compress responses with this request header
+    return false;
+  }
+  return compression.filter(req, res);
+}
 const { Server } = require('socket.io');
 
 const PORT = 3030;
 const app = express().use('*', cors());
+app.use(compression({ filter: shouldCompress }));
+const docs = path.join(__dirname, '../', 'dist');
+app.use(express.static(docs));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../', 'dist/index.html'));
+});
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
