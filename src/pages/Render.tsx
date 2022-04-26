@@ -12,6 +12,10 @@ import {
   PointLight,
   PCFSoftShadowMap,
 } from 'three';
+import {
+  generateBoundingBoxMeta,
+  generateBoundingBox,
+} from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
 
 const CANVAS_DOM = 'App';
@@ -22,7 +26,6 @@ export interface I_ImageMeta {
   id: string;
 }
 
-const clock = new Clock();
 function Render() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageMeta, setImageMeta] = useState<I_ImageMeta>({
@@ -43,18 +46,19 @@ function Render() {
     document.getElementById(CANVAS_DOM) || document.createElement('div'),
   );
   const sceneRef = useRef(new Scene());
-  const cameraRef = useRef(new PerspectiveCamera(75, 1, 0.1, 1000));
+  const cameraRef = useRef(new PerspectiveCamera(75, 1, 0.1, 999999));
   const rendererRef = useRef<WebGLRenderer>();
+  const boxsRef = useRef<number[][]>([]);
   useEffect(() => {
     if (!canvasRef.current) throw new Error('no view');
     const scene = sceneRef.current;
     const camera = cameraRef.current;
-    camera.position.set(0, 0, 200);
+    camera.position.set(0, 0, 3000);
     camera.matrixAutoUpdate = false;
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     rendererRef.current = renderer;
     renderer.setClearColor(0x888888);
-    // renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setPixelRatio(1);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
@@ -67,14 +71,12 @@ function Render() {
     scene.add(light2);
 
     loaderFBX.load(MODEL_PATH, (model) => {
-      model.scale.set(0.01, 0.01, 0.01);
+      model.castShadow = true;
+      model.receiveShadow = true;
       scene.add(model);
+      generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
+      generateBoundingBox(boxsRef.current, scene);
     });
-
-    // const geometry = new BoxGeometry(100, 100, 100);
-    // const material = new MeshLambertMaterial({ color: 0x008899 });
-    // const cube = new Mesh(geometry, material);
-    // scene.add(cube);
 
     const socket = io();
     socket.on('connect', () => {

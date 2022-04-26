@@ -65,7 +65,7 @@ function Viewer() {
       0.1,
       1000,
     );
-    camera.position.set(0, 0, 200);
+    camera.position.set(0, 0, 10000);
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     renderer.setClearColor(0x888888);
     // renderer.setPixelRatio(window.devicePixelRatio);
