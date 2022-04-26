@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { fromEvent, animationFrames, merge } from 'rxjs';
 import {
   auditTime,
+  filter,
   map,
   startWith,
   switchMap,
@@ -100,10 +101,10 @@ function Viewer() {
       fromEvent(window, 'resized').pipe(auditTime(50)),
     )
       .pipe(
-        startWith(cameraState(0.5)),
-        tap(() => setRedning(true)),
+        startWith(cameraState(1)),
         map(() => cameraState(0.5)),
         tap(() => {
+          setRedning(true);
           clearTimeout(endTimeTag);
           endTimeTag = setTimeout(() => {
             setCameraState(cameraState(1)); //高級品質
@@ -111,7 +112,10 @@ function Viewer() {
           }, 200);
         }),
       )
-      .subscribe((data) => setCameraState(data));
+      .subscribe((data) => {
+        console.log(111, data);
+        setCameraState(data);
+      });
 
     function cameraState(size = 1): I_CameraState {
       return {
