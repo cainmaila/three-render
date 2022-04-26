@@ -21,6 +21,13 @@ export const generateBoundingBoxMeta = (
   return boxs;
 };
 
+/**
+ * 創建Box顯示
+ * @param boxs - generateBoundingBoxMeta生成的資料
+ * @param container - 容器
+ * @param color
+ * @returns
+ */
 export const generateBoundingBox = (
   boxs: number[][],
   container: Object3D = new Group(),

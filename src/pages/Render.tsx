@@ -14,7 +14,6 @@ import {
 import { generateBoundingBoxMeta } from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
 
-const CANVAS_DOM = 'App';
 const MODEL_PATH = 'model/TciBio_20220311.fbx';
 
 export interface I_ImageMeta {
