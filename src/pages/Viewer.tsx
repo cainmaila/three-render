@@ -12,6 +12,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { io, Socket } from 'socket.io-client';
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 // const loaderFBX = new FBXLoader();
+import ReaderImg from './viewer/ReaderImg';
 import * as style from './style';
 import {
   Scene,
@@ -180,16 +181,7 @@ function Viewer() {
   return (
     <div id="App" style={style.full}>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
-      {image ? (
-        <img
-          style={style.pointerEventsNone}
-          src={image}
-          width="100%"
-          height="100%"
-        ></img>
-      ) : (
-        <div style={loading}>loading...</div>
-      )}
+      <ReaderImg image={image}></ReaderImg>
     </div>
   );
 }
