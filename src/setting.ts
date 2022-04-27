@@ -17,7 +17,7 @@ export default {
   },
   gltf: {
     path: '/model/warehouse/scene.gltf',
-    initPosition: [0, 0, 100],
+    initPosition: [0, 0, -20],
     type: 'gltf',
   },
 };

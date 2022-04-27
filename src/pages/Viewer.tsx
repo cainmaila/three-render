@@ -16,6 +16,7 @@ import * as style from './style';
 import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from 'three';
 import RenderUi from './viewer/RenderUi';
 import { useParams } from 'react-router-dom';
+import useModelPath from '../hooks/useModelPath';
 
 const CANVAS_DOM = 'App';
 
@@ -33,7 +34,7 @@ export interface I_CameraState {
 }
 
 function Viewer() {
-  const { model } = useParams(); //router params
+  const { modelMeta } = useModelPath();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
   const [cameraState, setCameraState] = useState<I_CameraState>({
@@ -53,6 +54,7 @@ function Viewer() {
     renderQualityRef.current = value;
   }, [value]);
   useEffect(() => {
+    if (!modelMeta) return;
     if (!canvasRef.current) throw new Error('no view');
     const view =
       document.getElementById(CANVAS_DOM) || document.createElement('div');
@@ -63,8 +65,8 @@ function Viewer() {
       0.1,
       999999,
     );
-    camera.position.set(-3000, 5000, 8000);
-    // camera.position.set(0, 0, 100);
+    const { initPosition } = modelMeta;
+    camera.position.set(initPosition[0], initPosition[1], initPosition[2]);
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     renderer.setClearColor(0x888888);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -156,7 +158,7 @@ function Viewer() {
     socket.on('boxs', ({ boxs }) => {
       generateBoundingBox(boxs, scene);
     });
-  }, []);
+  }, [modelMeta]);
 
   useEffect(() => {
     socket?.emit('client');
