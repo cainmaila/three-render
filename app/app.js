@@ -10,7 +10,7 @@ function shouldCompress(req, res) {
   }
   return compression.filter(req, res);
 }
-const { Server } = require('socket.io');
+const socketServer = require('./socketServer');
 
 const PORT = 3030;
 const app = express().use('*', cors());
@@ -21,55 +21,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../', 'dist/index.html'));
 });
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-});
 
-const socketMap = new Map();
-let renderSocket = null; //Render服務頁面
+socketServer(server);
 let renderBrowser = null; //Render page
-
-io.on('connection', (socket) => {
-  console.log('😀 a user connected', socket.id);
-  let targetSocket;
-  socket.on('render', () => {
-    console.log('🤟 render connected', socket.id);
-    renderSocket = socket; //前端渲染連線
-    socket.on('disconnect', () => {
-      renderSocket = null;
-      renderBrowser && renderBrowser.close();
-      console.log('🤬 render disconnected!');
-    });
-    socket.on('modelReady', ({ path }) => {
-      console.log('👍 model Ready', path);
-    });
-  });
-  socket.on('client', () => {
-    socketMap.set(socket.id, socket);
-    socket.on('disconnect', () => {
-      socketMap.delete(socket.id);
-      console.log('🤬 user disconnected', socket.id);
-    });
-  });
-  socket.on('img', (data) => {
-    targetSocket = socketMap.get(data.id);
-    targetSocket?.emit('img', data.image);
-  });
-  socket.on('cameraState', (data) => {
-    renderSocket?.emit('cameraState', { ...data, id: socket.id });
-  });
-  // box meta
-  socket.on('getBoxs', () => {
-    renderSocket?.emit('getBoxs', { id: socket.id });
-  });
-  socket.on('boxs', ({ id, boxs }) => {
-    targetSocket = socketMap.get(id);
-    targetSocket?.emit('boxs', { boxs });
-  });
-});
 
 server.listen(PORT, () => {
   console.log(`Server Listening on port ${PORT}`);
