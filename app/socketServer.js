@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
 function socketServer(httpServer) {
-  let renderSocket = null; //Render服務頁面
   const socketMap = new Map();
+  const renderMap = new Map();
   const io = new Server(httpServer, {
     cors: {
       origin: '*',
@@ -11,35 +11,39 @@ function socketServer(httpServer) {
   io.on('connection', (socket) => {
     console.log('😀 a user connected', socket.id);
     let targetSocket;
-    socket.on('render', () => {
-      console.log('🤟 render connected', socket.id);
-      renderSocket = socket; //前端渲染連線
+    socket.on('render', ({ tag }) => {
+      console.log('🤟 render connected', tag, socket.id);
+      renderMap.set(tag, socket);
       socket.on('disconnect', () => {
-        renderSocket = null;
-        // renderBrowser && renderBrowser.close();
+        renderMap.delete(tag);
         console.log('🤬 render disconnected!');
       });
       socket.on('modelReady', ({ path }) => {
         console.log('👍 model Ready', path);
       });
     });
-    socket.on('client', () => {
+    socket.on('client', ({ tag }) => {
+      const renderSocket = renderMap.get(tag);
+      if (!renderSocket) {
+        console.warn('💩 render not ready!!', tag);
+        return;
+      }
       socketMap.set(socket.id, socket);
       socket.on('disconnect', () => {
         socketMap.delete(socket.id);
         console.log('🤬 user disconnected', socket.id);
       });
+      // box meta
+      socket.on('getBoxs', () => {
+        renderSocket.emit('getBoxs', { id: socket.id });
+      });
+      socket.on('cameraState', (data) => {
+        renderSocket.emit('cameraState', { ...data, id: socket.id });
+      });
     });
     socket.on('img', (data) => {
       targetSocket = socketMap.get(data.id);
       targetSocket?.emit('img', data.image);
-    });
-    socket.on('cameraState', (data) => {
-      renderSocket?.emit('cameraState', { ...data, id: socket.id });
-    });
-    // box meta
-    socket.on('getBoxs', () => {
-      renderSocket?.emit('getBoxs', { id: socket.id });
     });
     socket.on('boxs', ({ id, boxs }) => {
       targetSocket = socketMap.get(id);

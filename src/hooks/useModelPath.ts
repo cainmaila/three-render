@@ -13,7 +13,7 @@ export default () => {
           return item[0] === model;
         }),
         filter((item) => !!item),
-        map((array) => array && array[1]),
+        map((array) => array && { ...array[1], tag: array[0] }),
       )
       .subscribe((meta) => {
         const _a = meta as I_ModelMeta;

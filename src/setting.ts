@@ -7,6 +7,7 @@ export interface I_ModelMeta {
   path: string;
   initPosition: [number, number, number];
   type: MODEL_TYPE;
+  tag?: string;
 }
 
 export default {

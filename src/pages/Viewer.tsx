@@ -161,9 +161,10 @@ function Viewer() {
   }, [modelMeta]);
 
   useEffect(() => {
-    socket?.emit('client');
+    if (!modelMeta) return;
+    socket?.emit('client', { tag: modelMeta.tag });
     socket?.emit('getBoxs');
-  }, [socket]);
+  }, [socket, modelMeta]);
 
   useEffect(() => {
     socket?.emit('cameraState', cameraState);

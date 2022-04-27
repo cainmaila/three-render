@@ -41,9 +41,9 @@ function Render() {
 
   //主流程
   useEffect(() => {
+    if (!modelMeta) return;
     of(modelMeta)
       .pipe(
-        filter((modelMeta) => !!modelMeta),
         /* 載入config */
         mergeMap(() => {
           return Axios.get('/config.json');
@@ -59,7 +59,7 @@ function Render() {
             sokcetRef.current = socket;
             socket.on('connect', () => {
               console.log('💖 socket link! id =>', socket.id);
-              socket.emit('render');
+              socket.emit('render', { tag: modelMeta.tag });
               subscriber.next(socket);
               subscriber.complete();
             });
@@ -77,7 +77,6 @@ function Render() {
         }),
         //模型載入
         mergeMap((_socket) => {
-          if (!modelMeta) throw new Error('modelMeta null');
           return loadModelObs(modelMeta);
         }),
         //模型處理與外框盒
