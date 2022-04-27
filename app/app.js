@@ -34,6 +34,8 @@ if (process.env.NODE_ENV === 'production') {
   puppeteer.launch().then(async (browser) => {
     const page = await browser.newPage();
     renderBrowser = browser;
-    await page.goto('http://localhost:3030/render');
+    //TODO:暫時寫死
+    await page.goto('http://localhost:3030/render/tci');
+    await page.goto('http://localhost:3030/render/gltf');
   });
 }
