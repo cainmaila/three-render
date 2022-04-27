@@ -20,8 +20,8 @@ import { generateBoundingBoxMeta } from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 
-// const MODEL_PATH = 'model/TciBio_20220311.fbx';
-const MODEL_PATH = 'model/warehouse/scene.gltf';
+const MODEL_PATH = 'model/TciBio_20220311.fbx';
+// const MODEL_PATH = 'model/warehouse/scene.gltf';
 
 export interface I_ImageMeta {
   image: string;
@@ -86,8 +86,8 @@ function Render() {
     });
 
     //模型載入
-    // loaderFBX.load(MODEL_PATH, (model) => {
-    loaderGLTF.load(MODEL_PATH, ({ scene: model }) => {
+    loaderFBX.load(MODEL_PATH, (model) => {
+      // loaderGLTF.load(MODEL_PATH, ({ scene: model }) => {
       model.castShadow = true;
       model.receiveShadow = true;
       scene.add(model);

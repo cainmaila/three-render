@@ -12,10 +12,8 @@ export const generateBoundingBoxMeta = (
 ) => {
   model.traverse((mesh) => {
     let box;
-    if (!(mesh instanceof Mesh)) {
-      box = new Box3().setFromObject(mesh);
-      boxs.push([...box.min.toArray(), ...box.max.toArray()]);
-    }
+    box = new Box3().setFromObject(mesh);
+    boxs.push([...box.min.toArray(), ...box.max.toArray()]);
   });
   return boxs;
 };
