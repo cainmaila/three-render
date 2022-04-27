@@ -6,6 +6,7 @@ import { generateBoundingBoxMeta } from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
 import useModelPath from '../hooks/useModelPath';
 import useRenderScene from '../hooks/useRenderScene';
+import useCameStateToImage from '../hooks/useCameStateToImage';
 import { filter, map, mergeMap, Observable, of, tap } from 'rxjs';
 import loadModelObs from '../observables/loadModelObs';
 import * as style from './style';
@@ -43,6 +44,7 @@ function Render() {
     of(modelMeta)
       .pipe(
         filter((modelMeta) => !!modelMeta),
+        /* 載入config */
         mergeMap(() => {
           return Axios.get('/config.json');
         }),
@@ -50,6 +52,7 @@ function Render() {
           const a = res as { data: any };
           setConfig(a.data);
         }),
+        /* socket連線 */
         mergeMap(() => {
           return new Observable((subscriber) => {
             const socket = io();
@@ -72,11 +75,12 @@ function Render() {
             });
           });
         }),
+        //模型載入
         mergeMap((_socket) => {
-          //模型載入
           if (!modelMeta) throw new Error('modelMeta null');
           return loadModelObs(modelMeta);
         }),
+        //模型處理與外框盒
         map((_model) => {
           const model = _model as Group;
           model.castShadow = true;
@@ -89,21 +93,15 @@ function Render() {
       .subscribe((a) => console.log(123, a));
   }, [modelMeta]);
 
-  useEffect(() => {
-    const renderer = rendererRef.current;
-    if (!cameraState.aspect || !renderer) return;
-    const camera = cameraRef.current;
-    camera.matrixWorld.fromArray(cameraState.matrix);
-    camera.aspect = cameraState.aspect;
-    camera.fov = cameraState.fov;
-    camera.updateProjectionMatrix();
-    renderer.setSize(cameraState.screen.width, cameraState.screen.height);
-    renderer.render(sceneRef.current, camera);
-    setImageMeta({
-      image: canvasRef.current?.toDataURL('image/webp', 0.8) || '',
-      id: cameraState.id || '',
-    });
-  }, [cameraState]);
+  //cameraState 渲染圖
+  useCameStateToImage({
+    rendererRef,
+    cameraRef,
+    sceneRef,
+    canvasRef,
+    cameraState,
+    setImageMeta,
+  });
 
   useEffect(() => {
     sokcetRef.current?.emit('img', imageMeta);
