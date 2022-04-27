@@ -11,14 +11,9 @@ export const generateBoundingBoxMeta = (
   boxs: number[][] = [],
 ) => {
   model.traverse((mesh) => {
-    if (mesh.name === 'Top') {
-      //TODO:偷懶隱藏
-      mesh.visible = false;
-    }
     let box;
-    if (mesh instanceof Mesh) {
-      box = mesh.geometry?.boundingBox || new Box3().setFromObject(mesh);
-      box.applyMatrix4(mesh.matrixWorld);
+    if (!(mesh instanceof Mesh)) {
+      box = new Box3().setFromObject(mesh);
       boxs.push([...box.min.toArray(), ...box.max.toArray()]);
     }
   });
@@ -42,7 +37,6 @@ export const generateBoundingBox = (
       new Vector3(box[0], box[1], box[2]),
       new Vector3(box[3], box[4], box[5]),
     );
-    // box3.applyMatrix4(container.matrixWorld);
     const helper = new Box3Helper(box3, new Color(color));
     container.add(helper);
   });
