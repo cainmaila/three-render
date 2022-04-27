@@ -1,27 +1,14 @@
+import Axios from 'axios-observable';
 import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-const loaderFBX = new FBXLoader();
-const loaderGLTF = new GLTFLoader();
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('/examples/js/libs/draco/');
-loaderGLTF.setDRACOLoader(dracoLoader);
-import * as style from './style';
-import {
-  Scene,
-  PerspectiveCamera,
-  WebGLRenderer,
-  AmbientLight,
-  PointLight,
-  PCFSoftShadowMap,
-} from 'three';
+import { Group } from 'three';
 import { generateBoundingBoxMeta } from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-
-const MODEL_PATH = 'model/TciBio_20220311.fbx';
-// const MODEL_PATH = 'model/warehouse/scene.gltf';
+import useModelPath from '../hooks/useModelPath';
+import useRenderScene from '../hooks/useRenderScene';
+import { filter, map, mergeMap, Observable, of, tap } from 'rxjs';
+import loadModelObs from '../observables/loadModelObs';
+import * as style from './style';
 
 export interface I_ImageMeta {
   image: string;
@@ -29,12 +16,13 @@ export interface I_ImageMeta {
 }
 
 function Render() {
+  const { modelMeta } = useModelPath();
+  const [config, setConfig] = useState();
+  const sokcetRef = useRef<Socket | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [imageMeta, setImageMeta] = useState<I_ImageMeta>({
-    image: '',
-    id: '',
-  });
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const { sceneRef, cameraRef, rendererRef } = useRenderScene(
+    canvasRef.current,
+  );
   const [cameraState, setCameraState] = useState<I_CameraState>({
     matrix: [],
     aspect: 0,
@@ -44,57 +32,62 @@ function Render() {
       height: 0,
     },
   });
-  const sceneRef = useRef(new Scene());
-  const cameraRef = useRef(new PerspectiveCamera(75, 1, 0.1, 999999));
-  const rendererRef = useRef<WebGLRenderer>();
+  const [imageMeta, setImageMeta] = useState<I_ImageMeta>({
+    image: '',
+    id: '',
+  });
   const boxsRef = useRef<number[][]>([]);
+
+  //主流程
   useEffect(() => {
-    if (!canvasRef.current) throw new Error('no view');
-    const scene = sceneRef.current;
-    const camera = cameraRef.current;
-    camera.position.set(0, 0, 3000);
-    camera.matrixAutoUpdate = false;
-    const renderer = new WebGLRenderer({ canvas: canvasRef.current });
-    rendererRef.current = renderer;
-    renderer.setClearColor(0x888888);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setPixelRatio(1);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = PCFSoftShadowMap;
-
-    const light = new AmbientLight(0x888888); // soft white light
-    scene.add(light);
-    const light2 = new PointLight(0xffffff, 1, 4000);
-    light2.position.set(100, 0, 200);
-    light2.castShadow = true;
-    scene.add(light2);
-
-    const socket = io();
-    socket.on('connect', () => {
-      console.log('💖', socket.id);
-      setSocket(socket);
-    });
-    socket.on('cameraState', (cameraState) => {
-      setCameraState(cameraState);
-    });
-    socket.on('getBoxs', ({ id }) => {
-      //索取box meta
-      socket.emit('boxs', {
-        id,
-        boxs: boxsRef.current,
-      });
-    });
-
-    //模型載入
-    loaderFBX.load(MODEL_PATH, (model) => {
-      // loaderGLTF.load(MODEL_PATH, ({ scene: model }) => {
-      model.castShadow = true;
-      model.receiveShadow = true;
-      scene.add(model);
-      generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
-      socket.emit('modelReady', { path: MODEL_PATH });
-    });
-  }, []);
+    of(modelMeta)
+      .pipe(
+        filter((modelMeta) => !!modelMeta),
+        mergeMap(() => {
+          return Axios.get('/config.json');
+        }),
+        tap((res) => {
+          const a = res as { data: any };
+          setConfig(a.data);
+        }),
+        mergeMap(() => {
+          return new Observable((subscriber) => {
+            const socket = io();
+            sokcetRef.current = socket;
+            socket.on('connect', () => {
+              console.log('💖', socket.id);
+              socket.emit('render');
+              subscriber.next(socket);
+              subscriber.complete();
+            });
+            socket.on('cameraState', (cameraState) => {
+              setCameraState(cameraState);
+            });
+            socket.on('getBoxs', ({ id }) => {
+              //索取box meta
+              socket.emit('boxs', {
+                id,
+                boxs: boxsRef.current,
+              });
+            });
+          });
+        }),
+        mergeMap((_socket) => {
+          //模型載入
+          if (!modelMeta) throw new Error('modelMeta null');
+          return loadModelObs(modelMeta);
+        }),
+        map((_model) => {
+          const model = _model as Group;
+          model.castShadow = true;
+          model.receiveShadow = true;
+          sceneRef.current.add(model);
+          generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
+          sokcetRef.current?.emit('modelReady', { path: modelMeta?.path });
+        }),
+      )
+      .subscribe((a) => console.log(123, a));
+  }, [modelMeta]);
 
   useEffect(() => {
     const renderer = rendererRef.current;
@@ -113,12 +106,8 @@ function Render() {
   }, [cameraState]);
 
   useEffect(() => {
-    socket?.emit('render');
-  }, [socket]);
-
-  useEffect(() => {
-    socket?.emit('img', imageMeta);
-  }, [imageMeta, socket]);
+    sokcetRef.current?.emit('img', imageMeta);
+  }, [imageMeta]);
 
   return (
     <div id="App" style={style.full}>

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { fromEvent, animationFrames, merge } from 'rxjs';
 import {
   auditTime,
-  filter,
   map,
   startWith,
   switchMap,
@@ -16,6 +15,7 @@ import ReaderImg from './viewer/ReaderImg';
 import * as style from './style';
 import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from 'three';
 import RenderUi from './viewer/RenderUi';
+import { useParams } from 'react-router-dom';
 
 const CANVAS_DOM = 'App';
 
@@ -33,6 +33,7 @@ export interface I_CameraState {
 }
 
 function Viewer() {
+  const { model } = useParams(); //router params
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
   const [cameraState, setCameraState] = useState<I_CameraState>({
