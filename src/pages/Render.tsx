@@ -58,7 +58,7 @@ function Render() {
             const socket = io();
             sokcetRef.current = socket;
             socket.on('connect', () => {
-              console.log('💖', socket.id);
+              console.log('💖 socket link! id =>', socket.id);
               socket.emit('render');
               subscriber.next(socket);
               subscriber.complete();
@@ -90,7 +90,7 @@ function Render() {
           sokcetRef.current?.emit('modelReady', { path: modelMeta?.path });
         }),
       )
-      .subscribe((a) => console.log(123, a));
+      .subscribe(() => console.info('🤖 render start'));
   }, [modelMeta]);
 
   //cameraState 渲染圖
