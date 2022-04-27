@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 const loaderFBX = new FBXLoader();
+const loaderGLTF = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('/examples/js/libs/draco/');
+loaderGLTF.setDRACOLoader(dracoLoader);
 import * as style from './style';
 import {
   Scene,
@@ -13,8 +18,10 @@ import {
 } from 'three';
 import { generateBoundingBoxMeta } from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 
-const MODEL_PATH = 'model/TciBio_20220311.fbx';
+// const MODEL_PATH = 'model/TciBio_20220311.fbx';
+const MODEL_PATH = 'model/warehouse/scene.gltf';
 
 export interface I_ImageMeta {
   image: string;
@@ -79,7 +86,8 @@ function Render() {
     });
 
     //模型載入
-    loaderFBX.load(MODEL_PATH, (model) => {
+    // loaderFBX.load(MODEL_PATH, (model) => {
+    loaderGLTF.load(MODEL_PATH, ({ scene: model }) => {
       model.castShadow = true;
       model.receiveShadow = true;
       scene.add(model);
