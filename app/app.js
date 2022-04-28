@@ -29,21 +29,28 @@ server.listen(PORT, () => {
   console.log(`Server Listening on port ${PORT}`);
 });
 
+const puppeteer = require('puppeteer');
 if (process.env.NODE_ENV === 'production') {
-  const puppeteer = require('puppeteer');
-  puppeteer.launch().then(async (browser) => {
-    const page = await browser.newPage();
-    // renderBrowser = browser;
-    //TODO:暫時寫死
-    openPage(`http://localhost:${PORT}/render/tci`);
-    openPage(`http://localhost:${PORT}/render/gltf`);
-  });
+  //TODO:暫時寫死
+  openPage(`http://localhost:${PORT}/render/tci`);
+  openPage(`http://localhost:${PORT}/render/gltf`);
 }
 
-const puppeteer = require('puppeteer');
 function openPage(url) {
-  puppeteer.launch().then(async (browser) => {
-    const page = await browser.newPage();
-    await page.goto(url);
-  });
+  puppeteer
+    .launch({
+      executablePath: '/usr/bin/google-chrome',
+      // executablePath: '/usr/bin/google-chrome-stable',
+      headless: true,
+      args: [
+        '--use-gl=egl',
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+      ],
+    })
+    .then(async (browser) => {
+      const page = await browser.newPage();
+      await page.goto(url);
+    });
 }

@@ -43,11 +43,11 @@ function socketServer(httpServer) {
     });
     socket.on('img', (data) => {
       targetSocket = socketMap.get(data.id);
-      targetSocket?.emit('img', data.image);
+      targetSocket && targetSocket.emit('img', data.image);
     });
     socket.on('boxs', ({ id, boxs }) => {
       targetSocket = socketMap.get(id);
-      targetSocket?.emit('boxs', { boxs });
+      targetSocket && targetSocket.emit('boxs', { boxs });
     });
   });
 }

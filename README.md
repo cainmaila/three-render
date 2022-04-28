@@ -14,7 +14,16 @@ yarn build
 yarn start
 ```
 
-> 開啟 <http://127.0.0.1:3000> 客戶端頁面
+> 開啟 <http://localhost:3000> 客戶端頁面
+
+## run to docker
+
+```base
+yarn
+yarn build
+docker build -t three-render .
+docker run -d -p 3000:3000 --name three-render-viewer three-render
+```
 
 ## 概念說明
 
