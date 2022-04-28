@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install curl gnupg -y \
     && apt-get install google-chrome-stable -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production
+ENV DOCKER=true
 ENV PORT=3000
 COPY package.json /
 COPY yarn.lock /

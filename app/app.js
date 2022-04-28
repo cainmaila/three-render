@@ -30,15 +30,8 @@ server.listen(PORT, () => {
 });
 
 const puppeteer = require('puppeteer');
-if (process.env.NODE_ENV === 'production') {
-  //TODO:暫時寫死
-  openPage(`http://localhost:${PORT}/render/tci`);
-  openPage(`http://localhost:${PORT}/render/gltf`);
-}
-
-function openPage(url) {
-  puppeteer
-    .launch({
+const puppeteerSetting = process.env.DOCKER
+  ? {
       executablePath: '/usr/bin/google-chrome',
       // executablePath: '/usr/bin/google-chrome-stable',
       headless: true,
@@ -48,9 +41,19 @@ function openPage(url) {
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
       ],
-    })
-    .then(async (browser) => {
-      const page = await browser.newPage();
-      await page.goto(url);
-    });
+    }
+  : {
+      headless: true,
+      args: ['--use-gl=egl'],
+    };
+function openPage(url) {
+  puppeteer.launch(puppeteerSetting).then(async (browser) => {
+    const page = await browser.newPage();
+    await page.goto(url);
+  });
+}
+if (process.env.NODE_ENV === 'production') {
+  //TODO:暫時寫死
+  openPage(`http://localhost:${PORT}/render/tci`);
+  openPage(`http://localhost:${PORT}/render/gltf`);
 }
