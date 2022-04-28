@@ -14,7 +14,7 @@ yarn build
 yarn start
 ```
 
-> 開啟 <http://127.0.0.1:3030> 客戶端頁面
+> 開啟 <http://127.0.0.1:3000> 客戶端頁面
 
 ## 概念說明
 
@@ -23,4 +23,4 @@ yarn start
 ## TO DO
 
 - 後續可導入`node-canvas-webgl`，不一定需要瀏覽器協助渲染，或者介接其他第三方渲染引擎
-- raycasthit 方法應用(場競選取)
+- raycasthit 方法應用(物件選取)

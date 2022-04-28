@@ -12,7 +12,7 @@ function shouldCompress(req, res) {
 }
 const socketServer = require('./socketServer');
 
-const PORT = 3030;
+const PORT = process.env.PORT || 3030;
 const app = express().use('*', cors());
 app.use(compression({ filter: shouldCompress }));
 const docs = path.join(__dirname, '../', 'dist');
@@ -23,7 +23,7 @@ app.get('*', (req, res) => {
 const server = http.createServer(app);
 
 socketServer(server);
-let renderBrowser = null; //Render page
+// let renderBrowser = null; //Render page
 
 server.listen(PORT, () => {
   console.log(`Server Listening on port ${PORT}`);
@@ -33,9 +33,17 @@ if (process.env.NODE_ENV === 'production') {
   const puppeteer = require('puppeteer');
   puppeteer.launch().then(async (browser) => {
     const page = await browser.newPage();
-    renderBrowser = browser;
+    // renderBrowser = browser;
     //TODO:暫時寫死
-    await page.goto('http://localhost:3030/render/tci');
-    await page.goto('http://localhost:3030/render/gltf');
+    openPage(`http://localhost:${PORT}/render/tci`);
+    openPage(`http://localhost:${PORT}/render/gltf`);
+  });
+}
+
+const puppeteer = require('puppeteer');
+function openPage(url) {
+  puppeteer.launch().then(async (browser) => {
+    const page = await browser.newPage();
+    await page.goto(url);
   });
 }

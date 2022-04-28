@@ -6,12 +6,16 @@ export default function Home() {
       <h1>雲渲染POC</h1>
       <nav>
         <ol>
-          <Link to="/viewer/tci">
-            <li>大江生醫廠房(FBX)</li>
-          </Link>
-          <Link to="/viewer/gltf">
-            <li>廢棄工廠(GLTF)</li>
-          </Link>
+          <li>
+            <a href="/viewer/tci" target="viewer_tci">
+              大江生醫廠房(FBX)
+            </a>
+          </li>
+          <li>
+            <a href="/viewer/gltf" target="viewer_gltf">
+              廢棄工廠(GLTF)
+            </a>
+          </li>
         </ol>
       </nav>
     </>

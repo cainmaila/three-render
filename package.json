@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node app/app.js",
+    "start": "cross-env NODE_ENV=production PORT=3000 node app/app.js",
     "app": "nodemon app/app.js",
     "dev": "vite",
     "build": "tsc && vite build",
