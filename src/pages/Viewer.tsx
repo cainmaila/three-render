@@ -163,6 +163,11 @@ function Viewer() {
 
   useEffect(() => {
     if (!modelMeta) return;
+    document.title = `Three Render Viewer 👻 ${modelMeta.tag}`;
+  }, [socket, modelMeta]);
+
+  useEffect(() => {
+    if (!modelMeta) return;
     socket?.emit('client', { tag: modelMeta.tag });
     socket?.emit('getBoxs');
   }, [socket, modelMeta]);
