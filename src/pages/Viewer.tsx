@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import useModelPath from '../hooks/useModelPath';
 
 const CANVAS_DOM = 'App';
+const RENDER_FPS = 50;
 
 const clock = new Clock();
 
@@ -102,13 +103,13 @@ function Viewer() {
       fromEvent(window, 'pointerdown').pipe(
         switchMap(() =>
           fromEvent(window, 'pointermove').pipe(
-            auditTime(33),
+            auditTime(RENDER_FPS),
             takeUntil(fromEvent(window, 'pointerup')),
           ),
         ),
       ),
-      fromEvent(window, 'mousewheel').pipe(auditTime(50)),
-      fromEvent(window, 'resized').pipe(auditTime(50)),
+      fromEvent(window, 'mousewheel').pipe(auditTime(RENDER_FPS)),
+      fromEvent(window, 'resized').pipe(auditTime(RENDER_FPS)),
     )
       .pipe(
         startWith(cameraState(1)),
