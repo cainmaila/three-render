@@ -19,6 +19,12 @@ yarn start
 ## run to docker
 
 ```base
+docker run -d -p 3000:3000 --name three-render-viewer cainmaila/three-render
+```
+
+or build in local.
+
+```base
 yarn
 yarn build
 docker build -t three-render .
