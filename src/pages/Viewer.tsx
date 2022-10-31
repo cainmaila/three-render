@@ -13,7 +13,13 @@ import { io, Socket } from 'socket.io-client';
 import { generateBoundingBox } from '../tools/meshTools';
 import ReaderImg from './viewer/ReaderImg';
 import * as style from './style';
-import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from 'three';
+import {
+  Scene,
+  PerspectiveCamera,
+  WebGLRenderer,
+  Clock,
+  sRGBEncoding,
+} from 'three';
 import RenderUi from './viewer/RenderUi';
 import { useParams } from 'react-router-dom';
 import useModelPath from '../hooks/useModelPath';
@@ -69,6 +75,7 @@ function Viewer() {
     const { initPosition } = modelMeta;
     camera.position.set(initPosition[0], initPosition[1], initPosition[2]);
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
+    renderer.outputEncoding = sRGBEncoding;
     renderer.setClearColor(0x888888);
     renderer.setPixelRatio(window.devicePixelRatio);
 
