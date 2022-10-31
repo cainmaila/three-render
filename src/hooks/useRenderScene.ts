@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
   AmbientLight,
+  HemisphereLight,
   PCFSoftShadowMap,
   PerspectiveCamera,
   PointLight,
@@ -19,6 +20,8 @@ export default (canvas: HTMLCanvasElement | null) => {
     camera.matrixAutoUpdate = false;
     const light = new AmbientLight(0x888888); // soft white light
     scene.add(light);
+    const hemiLight = new HemisphereLight(0xddeeff, 0x0f0e0d, 1);
+    scene.add(hemiLight);
     const light2 = new PointLight(0xffffff, 1, 4000);
     light2.position.set(100, 0, 200);
     light2.castShadow = true;
