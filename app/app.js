@@ -56,4 +56,5 @@ if (process.env.NODE_ENV === 'production') {
   //TODO:暫時寫死
   openPage(`http://localhost:${PORT}/render/tci`);
   openPage(`http://localhost:${PORT}/render/gltf`);
+  openPage(`http://localhost:${PORT}/render/man`);
 }
