@@ -21,4 +21,9 @@ export default {
     initPosition: [0, 0, -20],
     type: 'gltf',
   },
+  man: {
+    path: '/model/man/scene.gltf',
+    initPosition: [0, 0, 5],
+    type: 'gltf',
+  },
 };
