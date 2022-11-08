@@ -23,6 +23,7 @@ import {
 import RenderUi from './viewer/RenderUi';
 import { useParams } from 'react-router-dom';
 import useModelPath from '../hooks/useModelPath';
+import { DataConnection, Peer } from 'peerjs';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -41,6 +42,22 @@ export interface I_CameraState {
 }
 
 function Viewer() {
+  const connRef = useRef<DataConnection>();
+  useEffect(() => {
+    const peer = new Peer('cain123', {
+      host: 'localhost',
+      port: 9000,
+      path: '/peer',
+    });
+    peer.on('open', function (id) {
+      console.log('My peer ID is: ' + id);
+    });
+    peer.on('connection', function (conn) {
+      console.log(conn.peer);
+      connRef.current = conn;
+    });
+  }, []);
+
   const { modelMeta } = useModelPath();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
@@ -57,6 +74,20 @@ function Viewer() {
   const [rending, setRedning] = useState(false); //是否渲染中
   const [value, setValue] = useState('middle'); //渲染品質
   const renderQualityRef = useRef('middle');
+
+  useEffect(() => {
+    const view =
+      document.getElementById(CANVAS_DOM) || document.createElement('div');
+    if (connRef.current) {
+      connRef.current.send(
+        JSON.stringify({
+          image,
+          aspect: view.clientWidth / view.clientHeight,
+        }),
+      );
+    }
+  }, [image]);
+
   useEffect(() => {
     renderQualityRef.current = value;
   }, [value]);

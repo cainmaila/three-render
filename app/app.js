@@ -58,3 +58,6 @@ if (process.env.NODE_ENV === 'production') {
   openPage(`http://localhost:${PORT}/render/gltf`);
   openPage(`http://localhost:${PORT}/render/man`);
 }
+
+const { PeerServer } = require('peer');
+const peerServer = PeerServer({ port: 9000, path: '/peer' });
