@@ -1,7 +1,8 @@
-import { Peer } from 'peerjs';
-import { useEffect, useMemo, useState } from 'react';
+import { DataConnection, Peer } from 'peerjs';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowSize } from 'usehooks-ts';
 export default () => {
+  const connRef = useRef<DataConnection>();
   const [img, setImage] = useState('');
   const [aspect, setAspect] = useState(1);
   const { width, height } = useWindowSize();
@@ -17,14 +18,25 @@ export default () => {
     // });
     peer.on('open', function (id) {
       console.log('My peer ID is: ' + id);
+      relink();
+    });
+
+    function relink() {
       const conn = peer.connect('cain123');
+      connRef.current = conn;
       conn.on('data', function (data) {
         const obj = JSON.parse(data as string);
         const { image, aspect } = obj;
         setAspect(aspect);
         setImage(image);
       });
-    });
+      conn.on('close', function () {
+        console.log('close!');
+        setTimeout(() => {
+          relink();
+        }, 1500);
+      });
+    }
   }, []);
   return (
     <div
