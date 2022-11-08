@@ -9,11 +9,12 @@ export default () => {
     return width / height;
   }, [width, height]);
   useEffect(() => {
-    const peer = new Peer('', {
-      host: 'localhost',
-      port: 9000,
-      path: '/peer',
-    });
+    const peer = new Peer();
+    // const peer = new Peer('', {
+    //   host: 'localhost',
+    //   port: 9000,
+    //   path: '/peer',
+    // });
     peer.on('open', function (id) {
       console.log('My peer ID is: ' + id);
       const conn = peer.connect('cain123');

@@ -44,11 +44,12 @@ export interface I_CameraState {
 function Viewer() {
   const connRef = useRef<DataConnection>();
   useEffect(() => {
-    const peer = new Peer('cain123', {
-      host: 'localhost',
-      port: 9000,
-      path: '/peer',
-    });
+    const peer = new Peer('cain123');
+    // const peer = new Peer('cain123', {
+    //   host: 'localhost',
+    //   port: 9000,
+    //   path: '/peer',
+    // });
     peer.on('open', function (id) {
       console.log('My peer ID is: ' + id);
     });
