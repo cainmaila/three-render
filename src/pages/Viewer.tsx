@@ -40,9 +40,9 @@ export interface I_CameraState {
   };
   id?: string;
 }
-
 function Viewer() {
-  const connRef = useRef<DataConnection>();
+  // const connRef = useRef<DataConnection>();
+  const connMapRef = useRef<Map<string, DataConnection>>(new Map());
   useEffect(() => {
     const peer = new Peer('cain123');
     // const peer = new Peer('cain123', {
@@ -55,7 +55,17 @@ function Viewer() {
     });
     peer.on('connection', function (conn) {
       console.log(conn.peer);
-      connRef.current = conn;
+      connMapRef.current.set(conn.peer, conn);
+      conn.on('close', function () {
+        console.log('close!', conn.peer);
+        connMapRef.current.delete(conn.peer);
+      });
+      conn.on('open', function () {
+        console.log('opne!', conn.peer);
+      });
+      conn.on('error', function (error) {
+        console.log('error!', error);
+      });
     });
   }, []);
 
@@ -79,14 +89,13 @@ function Viewer() {
   useEffect(() => {
     const view =
       document.getElementById(CANVAS_DOM) || document.createElement('div');
-    if (connRef.current) {
-      connRef.current.send(
-        JSON.stringify({
-          image,
-          aspect: view.clientWidth / view.clientHeight,
-        }),
-      );
-    }
+    const data = JSON.stringify({
+      image,
+      aspect: view.clientWidth / view.clientHeight,
+    });
+    connMapRef.current.forEach((conn) => {
+      conn.send(data);
+    });
   }, [image]);
 
   useEffect(() => {
