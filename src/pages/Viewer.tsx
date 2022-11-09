@@ -24,6 +24,9 @@ import RenderUi from './viewer/RenderUi';
 import { useParams } from 'react-router-dom';
 import useModelPath from '../hooks/useModelPath';
 import { DataConnection, Peer } from 'peerjs';
+import useViewerId from '../hooks/useViewerId';
+import { Alert, Box, Button } from '@mui/material';
+import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -41,10 +44,11 @@ export interface I_CameraState {
   id?: string;
 }
 function Viewer() {
-  // const connRef = useRef<DataConnection>();
   const connMapRef = useRef<Map<string, DataConnection>>(new Map());
+  const viewerId = useViewerId();
+  const imageMetaRef = useRef<string>();
   useEffect(() => {
-    const peer = new Peer('cain123');
+    const peer = new Peer(viewerId);
     // const peer = new Peer('cain123', {
     //   host: 'localhost',
     //   port: 9000,
@@ -56,12 +60,14 @@ function Viewer() {
     peer.on('connection', function (conn) {
       console.log(conn.peer);
       connMapRef.current.set(conn.peer, conn);
+
       conn.on('close', function () {
         console.log('close!', conn.peer);
         connMapRef.current.delete(conn.peer);
       });
       conn.on('open', function () {
         console.log('opne!', conn.peer);
+        conn.send(imageMetaRef.current);
       });
       conn.on('error', function (error) {
         console.log('error!', error);
@@ -69,6 +75,11 @@ function Viewer() {
     });
   }, []);
 
+  const {
+    value: alertOffVal,
+    setTrue: setAlertOffTrue,
+    setFalse: setAlertOffOff,
+  } = useBoolean(false);
   const { modelMeta } = useModelPath();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
@@ -89,12 +100,12 @@ function Viewer() {
   useEffect(() => {
     const view =
       document.getElementById(CANVAS_DOM) || document.createElement('div');
-    const data = JSON.stringify({
+    imageMetaRef.current = JSON.stringify({
       image,
       aspect: view.clientWidth / view.clientHeight,
     });
     connMapRef.current.forEach((conn) => {
-      conn.send(data);
+      conn.send(imageMetaRef.current);
     });
   }, [image]);
 
@@ -224,11 +235,46 @@ function Viewer() {
     socket?.emit('cameraState', cameraState);
   }, [cameraState, socket]);
 
+  const [_, copy] = useCopyToClipboard();
+
+  function copyViewId() {
+    copy(`${window.location.origin}/client/${viewerId}`);
+    setAlertOffTrue();
+  }
+
+  function onAlertClose() {
+    setAlertOffOff();
+  }
+
   return (
     <div id="App" style={style.full}>
       <ReaderImg image={image} rending={rending && value === 'low'}></ReaderImg>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
       <RenderUi setValue={setValue} />
+      <Box
+        sx={{
+          position: 'absolute',
+          right: 4,
+          top: 4,
+        }}
+        onClick={copyViewId}
+      >
+        <Button variant="contained">複製分享</Button>
+      </Box>
+      {alertOffVal && (
+        <Alert
+          sx={{
+            position: 'absolute',
+            left: 4,
+            right: 4,
+            bottom: 4,
+          }}
+          severity="info"
+          onClose={onAlertClose}
+        >
+          已複製到剪貼簿
+        </Alert>
+      )}
     </div>
   );
 }

@@ -1,7 +1,9 @@
 import { DataConnection, Peer } from 'peerjs';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useWindowSize } from 'usehooks-ts';
 export default () => {
+  const { peer: mainPeerId } = useParams(); //router params
   const connRef = useRef<DataConnection>();
   const [img, setImage] = useState('');
   const [aspect, setAspect] = useState(1);
@@ -22,7 +24,7 @@ export default () => {
     });
 
     function relink() {
-      const conn = peer.connect('cain123');
+      const conn = peer.connect(mainPeerId || '');
       connRef.current = conn;
       conn.on('data', function (data) {
         const obj = JSON.parse(data as string);
