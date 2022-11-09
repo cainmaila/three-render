@@ -21,12 +21,11 @@ import {
   sRGBEncoding,
 } from 'three';
 import RenderUi from './viewer/RenderUi';
-import { useParams } from 'react-router-dom';
 import useModelPath from '../hooks/useModelPath';
-import { DataConnection, Peer } from 'peerjs';
 import useViewerId from '../hooks/useViewerId';
 import { Alert, Box, Button } from '@mui/material';
 import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
+import { useDataPeerMain } from '../hooks/useDataPeer';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -44,36 +43,9 @@ export interface I_CameraState {
   id?: string;
 }
 function Viewer() {
-  const connMapRef = useRef<Map<string, DataConnection>>(new Map());
   const viewerId = useViewerId();
-  const imageMetaRef = useRef<string>();
-  useEffect(() => {
-    const peer = new Peer(viewerId);
-    // const peer = new Peer('cain123', {
-    //   host: 'localhost',
-    //   port: 9000,
-    //   path: '/peer',
-    // });
-    peer.on('open', function (id) {
-      console.log('My peer ID is: ' + id);
-    });
-    peer.on('connection', function (conn) {
-      console.log(conn.peer);
-      connMapRef.current.set(conn.peer, conn);
 
-      conn.on('close', function () {
-        console.log('close!', conn.peer);
-        connMapRef.current.delete(conn.peer);
-      });
-      conn.on('open', function () {
-        console.log('opne!', conn.peer);
-        conn.send(imageMetaRef.current);
-      });
-      conn.on('error', function (error) {
-        console.log('error!', error);
-      });
-    });
-  }, []);
+  const { sentConns } = useDataPeerMain(viewerId);
 
   const {
     value: alertOffVal,
@@ -100,13 +72,12 @@ function Viewer() {
   useEffect(() => {
     const view =
       document.getElementById(CANVAS_DOM) || document.createElement('div');
-    imageMetaRef.current = JSON.stringify({
-      image,
-      aspect: view.clientWidth / view.clientHeight,
-    });
-    connMapRef.current.forEach((conn) => {
-      conn.send(imageMetaRef.current);
-    });
+    sentConns(
+      JSON.stringify({
+        image,
+        aspect: view.clientWidth / view.clientHeight,
+      }),
+    );
   }, [image]);
 
   useEffect(() => {
