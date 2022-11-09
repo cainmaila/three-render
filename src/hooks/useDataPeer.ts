@@ -11,7 +11,6 @@ export const useDataPeerMain = (viewerId: string) => {
     });
     peer.on('connection', function (conn) {
       console.log(conn.peer);
-      connMapRef.current.set(conn.peer, conn);
 
       conn.on('close', function () {
         console.log('close!', conn.peer);
@@ -20,6 +19,7 @@ export const useDataPeerMain = (viewerId: string) => {
       conn.on('open', function () {
         console.log('opne!', conn.peer);
         conn.send(dataRef.current);
+        connMapRef.current.set(conn.peer, conn);
       });
       conn.on('error', function (error) {
         console.log('error!', error);
@@ -30,7 +30,7 @@ export const useDataPeerMain = (viewerId: string) => {
   function sentConns(data: string) {
     dataRef.current = data;
     connMapRef.current.forEach((conn) => {
-      conn.open && conn.send(data);
+      conn.send(data);
     });
   }
 
