@@ -30,7 +30,7 @@ export const useDataPeerMain = (viewerId: string) => {
   function sentConns(data: string) {
     dataRef.current = data;
     connMapRef.current.forEach((conn) => {
-      conn.send(data);
+      conn.open && conn.send(data);
     });
   }
 
