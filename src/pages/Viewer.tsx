@@ -21,8 +21,11 @@ import {
   sRGBEncoding,
 } from 'three';
 import RenderUi from './viewer/RenderUi';
-import { useParams } from 'react-router-dom';
 import useModelPath from '../hooks/useModelPath';
+import useViewerId from '../hooks/useViewerId';
+import { Alert, Box, Button } from '@mui/material';
+import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
+import { useDataPeerMain } from '../hooks/useDataPeer';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -39,8 +42,16 @@ export interface I_CameraState {
   };
   id?: string;
 }
-
 function Viewer() {
+  const viewerId = useViewerId();
+
+  const { sentConns } = useDataPeerMain(viewerId);
+
+  const {
+    value: alertOffVal,
+    setTrue: setAlertOffTrue,
+    setFalse: setAlertOffOff,
+  } = useBoolean(false);
   const { modelMeta } = useModelPath();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
@@ -57,6 +68,18 @@ function Viewer() {
   const [rending, setRedning] = useState(false); //是否渲染中
   const [value, setValue] = useState('middle'); //渲染品質
   const renderQualityRef = useRef('middle');
+
+  useEffect(() => {
+    const view =
+      document.getElementById(CANVAS_DOM) || document.createElement('div');
+    sentConns(
+      JSON.stringify({
+        image,
+        aspect: view.clientWidth / view.clientHeight,
+      }),
+    );
+  }, [image]);
+
   useEffect(() => {
     renderQualityRef.current = value;
   }, [value]);
@@ -183,11 +206,46 @@ function Viewer() {
     socket?.emit('cameraState', cameraState);
   }, [cameraState, socket]);
 
+  const [_, copy] = useCopyToClipboard();
+
+  function copyViewId() {
+    copy(`${window.location.origin}/client/${viewerId}`);
+    setAlertOffTrue();
+  }
+
+  function onAlertClose() {
+    setAlertOffOff();
+  }
+
   return (
     <div id="App" style={style.full}>
       <ReaderImg image={image} rending={rending && value === 'low'}></ReaderImg>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
       <RenderUi setValue={setValue} />
+      <Box
+        sx={{
+          position: 'absolute',
+          right: 4,
+          top: 4,
+        }}
+        onClick={copyViewId}
+      >
+        <Button variant="contained">複製分享</Button>
+      </Box>
+      {alertOffVal && (
+        <Alert
+          sx={{
+            position: 'absolute',
+            left: 4,
+            right: 4,
+            bottom: 4,
+          }}
+          severity="info"
+          onClose={onAlertClose}
+        >
+          已複製到剪貼簿
+        </Alert>
+      )}
     </div>
   );
 }
