@@ -241,16 +241,18 @@ function Viewer() {
           top: 4,
         }}
       >
-        <>
-          <>
-            {streamOb?.map((stream, index) => {
-              return <VideoOb key={index} stream={stream}></VideoOb>;
-            })}
-          </>
-          <Button variant="contained" onClick={copyViewId}>
-            複製分享
-          </Button>
-        </>
+        <Button
+          variant="contained"
+          onClick={copyViewId}
+          sx={{ float: 'right' }}
+        >
+          複製分享
+        </Button>
+        <Box sx={{ display: 'flex' }}>
+          {streamOb?.map((stream, index) => {
+            return <VideoOb key={index} stream={stream}></VideoOb>;
+          })}
+        </Box>
       </Box>
       {alertOffVal && (
         <Alert

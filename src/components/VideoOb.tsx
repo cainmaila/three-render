@@ -13,5 +13,5 @@ export default ({ stream }: Prop) => {
     }
   }, [stream]);
 
-  return <video ref={vdoRef}></video>;
+  return <video ref={vdoRef} style={{ margin: 4 }}></video>;
 };

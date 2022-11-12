@@ -13,7 +13,7 @@ export const useUserMedia = () => {
   const [stream, setStream] = useState<MediaStream>();
   const userMedia = useCallback(() => {
     getUserMedia(
-      { video: { width: 200, height: 120 }, audio: false },
+      { video: { width: 100, height: 60 }, audio: false },
       function (stream: MediaStream) {
         setStream(stream);
       },
