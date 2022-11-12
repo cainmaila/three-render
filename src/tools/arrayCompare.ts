@@ -4,7 +4,7 @@
  * @param arrB
  * @returns
  */
-export const difference = <T>(arrA: [T], arrB: [T]) => {
+export const difference = <T>(arrA: T[], arrB: T[]) => {
   return arrA.filter((e) => {
     return arrB.indexOf(e) === -1;
   });

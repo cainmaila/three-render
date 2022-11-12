@@ -26,6 +26,9 @@ import useViewerId from '../hooks/useViewerId';
 import { Alert, Box, Button } from '@mui/material';
 import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
 import { useDataPeerMain } from '../hooks/useDataPeer';
+import { useUserMedia } from '../hooks/userMedia';
+import VideoOb from '../components/VideoOb';
+import { useLiveRoom } from '../hooks/useMediaPeer';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -45,7 +48,15 @@ export interface I_CameraState {
 function Viewer() {
   const viewerId = useViewerId();
 
-  const { sentConns } = useDataPeerMain(viewerId);
+  const { stream, userMedia } = useUserMedia();
+
+  const { sentDataToConns, peer, conns } = useDataPeerMain(viewerId);
+
+  const { streamOb } = useLiveRoom(peer, stream, conns);
+
+  useEffect(() => {
+    userMedia();
+  }, []);
 
   const {
     value: alertOffVal,
@@ -72,7 +83,7 @@ function Viewer() {
   useEffect(() => {
     const view =
       document.getElementById(CANVAS_DOM) || document.createElement('div');
-    sentConns(
+    sentDataToConns(
       JSON.stringify({
         image,
         aspect: view.clientWidth / view.clientHeight,
@@ -228,9 +239,17 @@ function Viewer() {
           right: 4,
           top: 4,
         }}
-        onClick={copyViewId}
       >
-        <Button variant="contained">複製分享</Button>
+        <>
+          <>
+            {streamOb?.map((stream, index) => {
+              return <VideoOb key={index} stream={stream}></VideoOb>;
+            })}
+          </>
+          <Button variant="contained" onClick={copyViewId}>
+            複製分享
+          </Button>
+        </>
       </Box>
       {alertOffVal && (
         <Alert
