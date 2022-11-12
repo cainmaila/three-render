@@ -222,6 +222,7 @@ function Viewer() {
   function copyViewId() {
     copy(`${window.location.origin}/client/${viewerId}`);
     setAlertOffTrue();
+    setTimeout(onAlertClose, 2000);
   }
 
   function onAlertClose() {
@@ -262,7 +263,7 @@ function Viewer() {
           severity="info"
           onClose={onAlertClose}
         >
-          已複製到剪貼簿
+          已複製到剪貼簿 {`${window.location.origin}/client/${viewerId}`}
         </Alert>
       )}
     </div>
