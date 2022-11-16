@@ -26,4 +26,9 @@ export default {
     initPosition: [0, 0, 5],
     type: 'gltf',
   },
+  mCSC2022: {
+    path: '/model/CSC2022_11_15.fbx',
+    initPosition: [3000, 2000, 0],
+    type: 'fbx',
+  },
 };

@@ -21,6 +21,11 @@ export default function Home() {
               藝術品(GLTF) 203M
             </a>
           </li>
+          <li>
+            <a href="/viewer/mCSC2022" target="viewer_gltf">
+              中鋼
+            </a>
+          </li>
         </ol>
       </nav>
     </>

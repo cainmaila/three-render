@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const path = require('path');
 const compression = require('compression');
 function shouldCompress(req, res) {
@@ -20,13 +22,31 @@ app.use(express.static(docs));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../', 'dist/index.html'));
 });
-const server = http.createServer(app);
 
+let server = null;
+let serverType = '';
+
+if (process.env.SSL_CERT_FILE && process.env.SSL_KEY_FILE) {
+  /* https */
+  serverType = 'https';
+  server = https.createServer(
+    {
+      cert: fs.readFileSync(path.resolve(process.env.SSL_CERT_FILE)),
+      key: fs.readFileSync(path.resolve(process.env.SSL_KEY_FILE)),
+    },
+    app,
+  );
+} else {
+  /* http */
+  serverType = 'http';
+
+  server = http.createServer(app);
+}
 socketServer(server);
 // let renderBrowser = null; //Render page
 
 server.listen(PORT, () => {
-  console.log(`Server Listening on port ${PORT}`);
+  console.info(`⛩️ ${serverType} Server Listening on port ${PORT}`);
 });
 
 const puppeteer = require('puppeteer');
@@ -54,10 +74,11 @@ function openPage(url) {
 }
 if (process.env.NODE_ENV === 'production') {
   //TODO:暫時寫死
-  openPage(`http://localhost:${PORT}/render/tci`);
-  openPage(`http://localhost:${PORT}/render/gltf`);
-  openPage(`http://localhost:${PORT}/render/man`);
+  openPage(`${serverType}://localhost:${PORT}/render/tci`);
+  openPage(`${serverType}://localhost:${PORT}/render/gltf`);
+  openPage(`${serverType}://localhost:${PORT}/render/man`);
+  openPage(`${serverType}://localhost:${PORT}/render/mCSC2022`);
 }
 
-const { PeerServer } = require('peer');
-const peerServer = PeerServer({ port: 9000, path: '/peer' });
+// const { PeerServer } = require('peer');
+// const peerServer = PeerServer({ port: 9000, path: '/peer' });
