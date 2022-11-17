@@ -23,7 +23,7 @@ export default function Home() {
           </li>
           <li>
             <a href="/viewer/csc" target="viewer_gltf">
-              中鋼4K 86M
+              中鋼(FBX)
             </a>
           </li>
         </ol>

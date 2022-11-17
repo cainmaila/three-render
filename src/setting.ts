@@ -26,4 +26,9 @@ export default {
     initPosition: [0, 0, 5],
     type: 'gltf',
   },
+  csc: {
+    path: '/model/CSC.fbx',
+    initPosition: [3000, 2000, 5],
+    type: 'fbx',
+  },
 };

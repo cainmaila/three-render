@@ -222,7 +222,7 @@ function Viewer() {
       <ReaderImg image={image} rending={rending && value === 'low'}></ReaderImg>
       <canvas ref={canvasRef} width="100%" height="100%"></canvas>
       <RenderUi setValue={setValue} />
-      <Box
+      {/* <Box
         sx={{
           position: 'absolute',
           right: 4,
@@ -231,21 +231,7 @@ function Viewer() {
         onClick={copyViewId}
       >
         <Button variant="contained">複製分享</Button>
-      </Box>
-      {alertOffVal && (
-        <Alert
-          sx={{
-            position: 'absolute',
-            left: 4,
-            right: 4,
-            bottom: 4,
-          }}
-          severity="info"
-          onClose={onAlertClose}
-        >
-          已複製到剪貼簿
-        </Alert>
-      )}
+      </Box> */}
     </div>
   );
 }
