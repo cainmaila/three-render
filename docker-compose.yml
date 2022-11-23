@@ -1,0 +1,13 @@
+services:
+  three-render-viewer:
+    container_name: three-render-viewer
+    image: cainmaila/three-render
+    ports:
+      - 3000:3000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
