@@ -6,6 +6,7 @@ import {
   PerspectiveCamera,
   PointLight,
   Scene,
+  sRGBEncoding,
   WebGLRenderer,
 } from 'three';
 
@@ -38,6 +39,7 @@ export default (canvas: HTMLCanvasElement | null) => {
     renderer.setPixelRatio(1);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
+    renderer.outputEncoding = sRGBEncoding;
   }, [canvas]);
 
   return {
