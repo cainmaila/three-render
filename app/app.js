@@ -15,8 +15,8 @@ const socketServer = require('./socketServer');
 const PORT = process.env.PORT || 3030;
 const app = express().use('*', cors());
 app.use(compression({ filter: shouldCompress }));
-const docs = path.join(__dirname, '../', 'dist');
-app.use(express.static(docs));
+const dist = path.join(__dirname, '../', 'dist');
+app.use(express.static(dist));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../', 'dist/index.html'));
 });
@@ -59,6 +59,3 @@ if (process.env.NODE_ENV === 'production') {
   openPage(`http://localhost:${PORT}/render/man`);
   openPage(`http://localhost:${PORT}/render/csc`);
 }
-
-// const { PeerServer } = require('peer');
-// const peerServer = PeerServer({ port: 9000, path: '/peer' });
