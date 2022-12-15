@@ -9,13 +9,14 @@ RUN apt-get update && apt-get install curl gnupg -y \
     && apt-get update \
     && apt-get install google-chrome-stable -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+RUN npm i -g pnpm
 ENV NODE_ENV=production
 ENV DOCKER=true
 ENV PORT=3000
 COPY package.json /
-COPY yarn.lock /
+COPY pnpm-lock.yaml /
 COPY app /app
 COPY dist /dist
-RUN yarn
+RUN pnpm i
 EXPOSE 3000
-ENTRYPOINT [ "yarn","start"]
+ENTRYPOINT [ "pnpm","start"]
