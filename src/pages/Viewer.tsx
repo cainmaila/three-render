@@ -23,7 +23,6 @@ import {
 import RenderUi from './viewer/RenderUi';
 import useModelPath from '../hooks/useModelPath';
 import useViewerId from '../hooks/useViewerId';
-import { Alert, Box, Button } from '@mui/material';
 import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
 import { useDataPeerMain } from '../hooks/useDataPeer';
 
@@ -128,7 +127,7 @@ function Viewer() {
     }
 
     //renderer events
-    let endTimeTag: NodeJS.Timeout;
+    let endTimeTag = 0;
     merge(
       fromEvent(window, 'pointerdown').pipe(
         switchMap(() =>
