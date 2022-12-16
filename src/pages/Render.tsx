@@ -9,7 +9,7 @@ import useCameStateToImage from '../hooks/useCameStateToImage';
 import { map, mergeMap, Observable, of } from 'rxjs';
 import loadModelObs from '../observables/loadModelObs';
 import * as style from './style';
-import { CONFUG_PATH } from '../setting';
+import { CONFUG_PATH, DEF_FOV } from '../setting';
 import { BestfitViewPort } from '../tools/cameraTools';
 
 export interface I_ImageMeta {
@@ -38,6 +38,7 @@ function Render() {
     id: '',
   });
   const boxsRef = useRef<number[][]>([]);
+  const bestfitViewPortRef = useRef<BestfitViewPort>();
 
   //主流程
   useEffect(() => {
@@ -58,11 +59,13 @@ function Render() {
             socket.on('cameraState', (cameraState) => {
               setCameraState(cameraState);
             });
-            socket.on('getBoxs', ({ id }) => {
+            socket.on('getBoxs', ({ id, aspect }) => {
               //索取box meta
               socket.emit('boxs', {
                 id,
                 boxs: boxsRef.current,
+                aspectInitPosition:
+                  bestfitViewPortRef.current?.computePosition(aspect),
               });
             });
           });
@@ -78,12 +81,9 @@ function Render() {
           model.receiveShadow = true;
           sceneRef.current.add(model);
           generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
+          //計算最適大小tools
+          bestfitViewPortRef.current = new BestfitViewPort(model, DEF_FOV);
           sokcetRef.current?.emit('modelReady', { path: modelMeta?.path });
-
-          //計算最適大小
-          const bestfitViewPort = new BestfitViewPort(model, 60);
-          const position = bestfitViewPort.computePosition(375 / 667);
-          console.log('💓最適大小', position);
         }),
       )
       .subscribe(() => console.info('🤖 render start'));

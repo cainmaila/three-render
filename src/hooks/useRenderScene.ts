@@ -18,7 +18,7 @@ export default (canvas: HTMLCanvasElement | null) => {
   useEffect(() => {
     const scene = sceneRef.current;
     const camera = cameraRef.current;
-    camera.position.set(0, 0, 3000);
+    camera.position.set(0, 0, 999999);
     camera.matrixAutoUpdate = false;
     const light = new AmbientLight(0x888888); // soft white light
     scene.add(light);

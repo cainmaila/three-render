@@ -35,8 +35,8 @@ function socketServer(httpServer) {
         console.log('🤬 user disconnected', socket.id);
       });
       // box meta
-      socket.on('getBoxs', () => {
-        renderSocket.emit('getBoxs', { id: socket.id });
+      socket.on('getBoxs', (data) => {
+        renderSocket.emit('getBoxs', { ...data, id: socket.id });
       });
       socket.on('cameraState', (data) => {
         renderSocket.emit('cameraState', { ...data, id: socket.id });
@@ -46,9 +46,9 @@ function socketServer(httpServer) {
       targetSocket = socketMap.get(data.id);
       targetSocket && targetSocket.emit('img', data.image);
     });
-    socket.on('boxs', ({ id, boxs }) => {
+    socket.on('boxs', ({ id, boxs, aspectInitPosition }) => {
       targetSocket = socketMap.get(id);
-      targetSocket && targetSocket.emit('boxs', { boxs });
+      targetSocket && targetSocket.emit('boxs', { boxs, aspectInitPosition });
     });
   });
   this.hasTag = function (tag) {

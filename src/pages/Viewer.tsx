@@ -97,7 +97,9 @@ function Viewer() {
       999999,
     );
     const { initPosition } = modelMeta;
-    camera.position.set(initPosition[0], initPosition[1], initPosition[2]);
+    initPosition
+      ? camera.position.set(initPosition[0], initPosition[1], initPosition[2])
+      : camera.position.set(0, 0, 999999);
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     renderer.outputEncoding = sRGBEncoding;
     renderer.setClearColor(0x888888);
@@ -187,7 +189,16 @@ function Viewer() {
     socket.on('img', (img) => {
       setImage(img);
     });
-    socket.on('boxs', ({ boxs }) => {
+    socket.on('boxs', ({ boxs, aspectInitPosition }) => {
+      if (!initPosition) {
+        camera.position.set(
+          aspectInitPosition.x,
+          aspectInitPosition.y,
+          aspectInitPosition.z,
+        );
+        controls.update();
+        setCameraState(cameraState(1)); //高級品質
+      }
       generateBoundingBox(boxs, scene);
     });
   }, [modelMeta]);
@@ -199,8 +210,10 @@ function Viewer() {
 
   useEffect(() => {
     if (!modelMeta) return;
+    const view = document.getElementById(CANVAS_DOM);
+    if (!view) throw new Error('找不到 id ' + CANVAS_DOM);
     socket?.emit('client', { tag: modelMeta.id });
-    socket?.emit('getBoxs');
+    socket?.emit('getBoxs', { aspect: view.clientWidth / view.clientHeight }); //aspect 是希望可以取得最適角度
   }, [socket, modelMeta]);
 
   useEffect(() => {
