@@ -15,7 +15,7 @@ export interface I_ModelMeta_v2 {
 
 export default (config: string) => {
   const { model } = useParams(); //router params
-  const [modelMeta, setModelMeta] = useState<I_ModelMeta | undefined>();
+  const [modelMeta, setModelMeta] = useState<I_ModelMeta_v2 | undefined>();
 
   useEffectOnce(() => {
     axios
@@ -29,7 +29,7 @@ export default (config: string) => {
         }),
       )
       .subscribe((meta) => {
-        const _a = meta as I_ModelMeta;
+        const _a = meta as I_ModelMeta_v2;
         setModelMeta(_a);
       });
   });

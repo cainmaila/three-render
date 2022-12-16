@@ -19,13 +19,28 @@ const dist = path.join(__dirname, '../', 'dist');
 app.use(express.static(dist));
 const model = path.join(__dirname, '../', 'model');
 app.use(express.static(model));
+const modelsConfig = require('../model/config.json');
+
+const server = http.createServer(app);
+new socketServer(server);
+
+/* 確認開啟render */
+app.get('/load/:id', (req, res) => {
+  const model = modelsConfig.models.find((model) => model.id === req.params.id);
+  if (!model) {
+    res.status(404).send(404);
+  } else if (socketServer.hasTag(req.params.id)) {
+    res.send(socketServer.isReady(req.params.id) ? model : 'loading');
+  } else {
+    //還沒開render
+    openPage(`http://localhost:${PORT}/render/${req.params.id}`);
+    res.send('loading');
+  }
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../', 'dist/index.html'));
 });
-const server = http.createServer(app);
-
-socketServer(server);
-// let renderBrowser = null; //Render page
 
 server.listen(PORT, () => {
   console.log(`Server Listening on port ${PORT}`);
@@ -53,11 +68,4 @@ function openPage(url) {
     const page = await browser.newPage();
     await page.goto(url);
   });
-}
-if (process.env.NODE_ENV === 'production') {
-  //TODO:暫時寫死
-  openPage(`http://localhost:${PORT}/render/tci`);
-  openPage(`http://localhost:${PORT}/render/gltf`);
-  openPage(`http://localhost:${PORT}/render/man`);
-  openPage(`http://localhost:${PORT}/render/csc`);
 }

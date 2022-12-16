@@ -17,6 +17,9 @@ export default defineConfig({
       '/model': {
         target: 'http://localhost:3030',
       },
+      '/load': {
+        target: 'http://localhost:3030',
+      },
     },
   },
   plugins: [react()],

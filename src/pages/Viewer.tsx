@@ -21,11 +21,11 @@ import {
   sRGBEncoding,
 } from 'three';
 import RenderUi from './viewer/RenderUi';
-import useModelPath from '../hooks/useModelPath';
 import useViewerId from '../hooks/useViewerId';
 import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
 import { useDataPeerMain } from '../hooks/useDataPeer';
-import { CONFUG_PATH, DEF_FOV } from '../setting';
+import { DEF_FOV } from '../setting';
+import useLoadModel from '../hooks/useLoadModel';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -52,7 +52,7 @@ function Viewer() {
     setTrue: setAlertOffTrue,
     setFalse: setAlertOffOff,
   } = useBoolean(false);
-  const { modelMeta } = useModelPath(CONFUG_PATH);
+  const { modelMeta } = useLoadModel();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
   const [cameraState, setCameraState] = useState<I_CameraState>({
@@ -97,7 +97,6 @@ function Viewer() {
       999999,
     );
     const { initPosition } = modelMeta;
-    console.log('initPosition', initPosition);
     camera.position.set(initPosition[0], initPosition[1], initPosition[2]);
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     renderer.outputEncoding = sRGBEncoding;
@@ -200,7 +199,7 @@ function Viewer() {
 
   useEffect(() => {
     if (!modelMeta) return;
-    socket?.emit('client', { tag: modelMeta.tag });
+    socket?.emit('client', { tag: modelMeta.id });
     socket?.emit('getBoxs');
   }, [socket, modelMeta]);
 

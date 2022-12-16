@@ -51,7 +51,7 @@ function Render() {
             sokcetRef.current = socket;
             socket.on('connect', () => {
               console.log('💖 socket link! id =>', socket.id);
-              socket.emit('render', { tag: modelMeta.tag });
+              socket.emit('render', { tag: modelMeta.id });
               subscriber.next(socket);
               subscriber.complete();
             });

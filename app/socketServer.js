@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
+const socketMap = new Map();
+const renderMap = new Map();
 function socketServer(httpServer) {
-  const socketMap = new Map();
-  const renderMap = new Map();
   const io = new Server(httpServer, {
     cors: {
       origin: '*',
@@ -19,6 +19,7 @@ function socketServer(httpServer) {
         console.log('🤬 render disconnected!');
       });
       socket.on('modelReady', ({ path }) => {
+        socket.imReady = true; //完成了XD
         console.log('👍 model Ready', path);
       });
     });
@@ -35,6 +36,7 @@ function socketServer(httpServer) {
       });
       // box meta
       socket.on('getBoxs', () => {
+        console.log(6666);
         renderSocket.emit('getBoxs', { id: socket.id });
       });
       socket.on('cameraState', (data) => {
@@ -50,5 +52,15 @@ function socketServer(httpServer) {
       targetSocket && targetSocket.emit('boxs', { boxs });
     });
   });
+  this.hasTag = function (tag) {
+    return renderMap.get(tag);
+  };
 }
+
+socketServer.hasTag = function (tag) {
+  return !!renderMap.get(tag);
+};
+socketServer.isReady = function (tag) {
+  return !!renderMap.get(tag)?.imReady;
+};
 module.exports = socketServer;
