@@ -25,7 +25,7 @@ import useModelPath from '../hooks/useModelPath';
 import useViewerId from '../hooks/useViewerId';
 import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
 import { useDataPeerMain } from '../hooks/useDataPeer';
-import { CONFUG_PATH } from '../setting';
+import { CONFUG_PATH, DEF_FOV } from '../setting';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -83,6 +83,7 @@ function Viewer() {
   useEffect(() => {
     renderQualityRef.current = value;
   }, [value]);
+
   useEffect(() => {
     if (!modelMeta) return;
     if (!canvasRef.current) throw new Error('no view');
@@ -90,7 +91,7 @@ function Viewer() {
       document.getElementById(CANVAS_DOM) || document.createElement('div');
     const scene = new Scene();
     const camera = new PerspectiveCamera(
-      60,
+      DEF_FOV,
       view.clientWidth / view.clientHeight,
       0.1,
       999999,

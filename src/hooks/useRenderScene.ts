@@ -9,10 +9,11 @@ import {
   sRGBEncoding,
   WebGLRenderer,
 } from 'three';
+import { DEF_FOV } from '../setting';
 
 export default (canvas: HTMLCanvasElement | null) => {
   const sceneRef = useRef(new Scene());
-  const cameraRef = useRef(new PerspectiveCamera(60, 1, 0.1, 999999));
+  const cameraRef = useRef(new PerspectiveCamera(DEF_FOV, 1, 0.1, 999999));
 
   useEffect(() => {
     const scene = sceneRef.current;
