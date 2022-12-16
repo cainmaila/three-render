@@ -36,7 +36,6 @@ function socketServer(httpServer) {
       });
       // box meta
       socket.on('getBoxs', () => {
-        console.log(6666);
         renderSocket.emit('getBoxs', { id: socket.id });
       });
       socket.on('cameraState', (data) => {
