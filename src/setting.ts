@@ -1,3 +1,5 @@
+export const CONFUG_PATH = '/config.json';
+
 export enum MODEL_TYPE {
   FBX = 'fbx',
   GLTF = 'gltf',

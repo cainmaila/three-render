@@ -17,6 +17,8 @@ const app = express().use('*', cors());
 app.use(compression({ filter: shouldCompress }));
 const dist = path.join(__dirname, '../', 'dist');
 app.use(express.static(dist));
+const model = path.join(__dirname, '../', 'model');
+app.use(express.static(model));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../', 'dist/index.html'));
 });

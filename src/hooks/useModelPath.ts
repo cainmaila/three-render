@@ -1,25 +1,38 @@
-import { useEffect, useState } from 'react';
+import axios from 'axios-observable/dist/axios';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { filter, find, from, map } from 'rxjs';
-import setting, { I_ModelMeta } from '../setting';
+import { first, map, mergeAll } from 'rxjs';
+import { useEffectOnce } from 'usehooks-ts';
+import { I_ModelMeta, MODEL_TYPE } from '../setting';
 
-export default () => {
+export interface I_ModelMeta_v2 {
+  id: string;
+  path: string;
+  initPosition: [number, number, number];
+  type: MODEL_TYPE;
+  tag?: string;
+}
+
+export default (config: string) => {
   const { model } = useParams(); //router params
   const [modelMeta, setModelMeta] = useState<I_ModelMeta | undefined>();
-  useEffect(() => {
-    from(Object.entries(setting))
+
+  useEffectOnce(() => {
+    axios
+      .get(config)
       .pipe(
-        find((item) => {
-          return item[0] === model;
+        map((res) => res?.data?.models),
+        mergeAll(),
+        first((_item) => {
+          const item = _item as unknown as I_ModelMeta_v2;
+          return item.id === model;
         }),
-        filter((item) => !!item),
-        map((array) => array && { ...array[1], tag: array[0] }),
       )
       .subscribe((meta) => {
         const _a = meta as I_ModelMeta;
         setModelMeta(_a);
       });
-  }, [model]);
+  });
   return {
     modelMeta,
   };

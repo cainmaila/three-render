@@ -7,9 +7,10 @@ import { I_CameraState } from './Viewer';
 import useModelPath from '../hooks/useModelPath';
 import useRenderScene from '../hooks/useRenderScene';
 import useCameStateToImage from '../hooks/useCameStateToImage';
-import { filter, map, mergeMap, Observable, of, tap } from 'rxjs';
+import { map, mergeMap, Observable, of, tap } from 'rxjs';
 import loadModelObs from '../observables/loadModelObs';
 import * as style from './style';
+import { CONFUG_PATH } from '../setting';
 
 export interface I_ImageMeta {
   image: string;
@@ -17,8 +18,7 @@ export interface I_ImageMeta {
 }
 
 function Render() {
-  const { modelMeta } = useModelPath();
-  const [config, setConfig] = useState();
+  const { modelMeta } = useModelPath(CONFUG_PATH); /* 包含載入config */
   const sokcetRef = useRef<Socket | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { sceneRef, cameraRef, rendererRef } = useRenderScene(
@@ -44,14 +44,6 @@ function Render() {
     if (!modelMeta) return;
     of(modelMeta)
       .pipe(
-        /* 載入config */
-        mergeMap(() => {
-          return Axios.get('/config.json');
-        }),
-        tap((res) => {
-          const a = res as { data: any };
-          setConfig(a.data);
-        }),
         /* socket連線 */
         mergeMap(() => {
           return new Observable((subscriber) => {

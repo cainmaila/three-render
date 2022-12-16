@@ -25,6 +25,7 @@ import useModelPath from '../hooks/useModelPath';
 import useViewerId from '../hooks/useViewerId';
 import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
 import { useDataPeerMain } from '../hooks/useDataPeer';
+import { CONFUG_PATH } from '../setting';
 
 const CANVAS_DOM = 'App';
 const RENDER_FPS = 50;
@@ -51,7 +52,7 @@ function Viewer() {
     setTrue: setAlertOffTrue,
     setFalse: setAlertOffOff,
   } = useBoolean(false);
-  const { modelMeta } = useModelPath();
+  const { modelMeta } = useModelPath(CONFUG_PATH);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState('');
   const [cameraState, setCameraState] = useState<I_CameraState>({

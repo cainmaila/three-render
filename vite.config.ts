@@ -11,6 +11,12 @@ export default defineConfig({
         target: 'ws://localhost:3030',
         ws: true,
       },
+      '/config.json': {
+        target: 'http://localhost:3030',
+      },
+      '/model': {
+        target: 'http://localhost:3030',
+      },
     },
   },
   plugins: [react()],
