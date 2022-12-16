@@ -90,12 +90,13 @@ function Viewer() {
       document.getElementById(CANVAS_DOM) || document.createElement('div');
     const scene = new Scene();
     const camera = new PerspectiveCamera(
-      40,
+      60,
       view.clientWidth / view.clientHeight,
       0.1,
       999999,
     );
     const { initPosition } = modelMeta;
+    console.log('initPosition', initPosition);
     camera.position.set(initPosition[0], initPosition[1], initPosition[2]);
     const renderer = new WebGLRenderer({ canvas: canvasRef.current });
     renderer.outputEncoding = sRGBEncoding;

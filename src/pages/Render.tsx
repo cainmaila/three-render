@@ -1,7 +1,7 @@
 import Axios from 'axios-observable';
 import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { Group } from 'three';
+import { Box3, Group, Vector3 } from 'three';
 import { generateBoundingBoxMeta } from '../tools/meshTools';
 import { I_CameraState } from './Viewer';
 import useModelPath from '../hooks/useModelPath';
@@ -79,6 +79,23 @@ function Render() {
           sceneRef.current.add(model);
           generateBoundingBoxMeta(model, boxsRef.current); //用模型生成 BoundingBoxMeta
           sokcetRef.current?.emit('modelReady', { path: modelMeta?.path });
+
+          //計算最適大小
+          // 創建包圍盒
+          const boundingBox = new Box3().setFromObject(model);
+          console.log(4444, boundingBox);
+          const v3 = new Vector3();
+          // 獲取包圍盒大小
+          const size = boundingBox.getSize(v3);
+          // 計算鏡頭位置，以便讓模型完全顯示在視圖中
+          const aspect = 375 / 667;
+          // const aspect = 1180 / 820;
+          const distance =
+            size.length() / 2 / Math.tan((((Math.PI / 180) * 60) / 2) * aspect);
+          const position = model.position
+            .clone()
+            .add(new Vector3(0, boundingBox.max.y, distance));
+          console.log(1111, position);
         }),
       )
       .subscribe(() => console.info('🤖 render start'));

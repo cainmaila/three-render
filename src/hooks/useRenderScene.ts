@@ -12,7 +12,7 @@ import {
 
 export default (canvas: HTMLCanvasElement | null) => {
   const sceneRef = useRef(new Scene());
-  const cameraRef = useRef(new PerspectiveCamera(75, 1, 0.1, 999999));
+  const cameraRef = useRef(new PerspectiveCamera(60, 1, 0.1, 999999));
 
   useEffect(() => {
     const scene = sceneRef.current;
