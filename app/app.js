@@ -30,6 +30,7 @@ app.get('/load/:id', (req, res) => {
   if (!model) {
     res.status(404).send(404);
   } else if (socketServer.hasTag(req.params.id)) {
+    delete model.path;
     res.send(socketServer.isReady(req.params.id) ? model : 'loading');
   } else {
     //還沒開render
