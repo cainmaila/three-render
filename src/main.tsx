@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Routes>
       <Route path="/render/:model" element={<Render />} />
       <Route path="/viewer/:model" element={<Viewer />} />
-      <Route path="/client/:peer" element={<ClientView />} />
+      {/* <Route path="/client/:peer" element={<ClientView />} /> */}
       <Route path="*" element={<Home />} />
     </Routes>
   </BrowserRouter>,

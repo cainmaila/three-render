@@ -23,7 +23,7 @@ import {
 import RenderUi from './viewer/RenderUi';
 import useViewerId from '../hooks/useViewerId';
 import { useBoolean, useCopyToClipboard } from 'usehooks-ts';
-import { useDataPeerMain } from '../hooks/useDataPeer';
+// import { useDataPeerMain } from '../hooks/useDataPeer';
 import { DEF_FOV } from '../setting';
 import useLoadModel from '../hooks/useLoadModel';
 
@@ -45,10 +45,10 @@ export interface I_CameraState {
 function Viewer() {
   const viewerId = useViewerId();
 
-  const { sentConns } = useDataPeerMain(viewerId);
+  // const { sentConns } = useDataPeerMain(viewerId);
 
   const {
-    value: alertOffVal,
+    value: boolean,
     setTrue: setAlertOffTrue,
     setFalse: setAlertOffOff,
   } = useBoolean(false);
@@ -69,16 +69,16 @@ function Viewer() {
   const [value, setValue] = useState('middle'); //渲染品質
   const renderQualityRef = useRef('middle');
 
-  useEffect(() => {
-    const view =
-      document.getElementById(CANVAS_DOM) || document.createElement('div');
-    sentConns(
-      JSON.stringify({
-        image,
-        aspect: view.clientWidth / view.clientHeight,
-      }),
-    );
-  }, [image]);
+  // useEffect(() => {
+  //   const view =
+  //     document.getElementById(CANVAS_DOM) || document.createElement('div');
+  //   sentConns(
+  //     JSON.stringify({
+  //       image,
+  //       aspect: view.clientWidth / view.clientHeight,
+  //     }),
+  //   );
+  // }, [image]);
 
   useEffect(() => {
     renderQualityRef.current = value;
