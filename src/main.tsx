@@ -5,7 +5,7 @@ import './index.css';
 import Home from './pages/Home';
 import Render from './pages/Render';
 import Viewer from './pages/Viewer';
-import ClientView from './pages/ClientView';
+// import ClientView from './pages/ClientView';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
