@@ -1,7 +1,7 @@
 {
   "name": "three-render",
   "private": true,
-  "version": "0.2.0",
+  "version": "1.0.0",
   "scripts": {
     "start": "cross-env NODE_ENV=production PORT=3000 node app/app.js",
     "app": "nodemon app/app.js",

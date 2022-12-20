@@ -1,5 +1,6 @@
 # 基於 Three 的雲渲染概念 POC
 
+> 1.0.0 載入 config.json 模型資源設定檔
 > 0.2.0 模型外掛資料夾，model 外部載入，docker 容器需外掛
 > 0.1.0 實作了 p2p 操作螢幕分享
 
@@ -12,9 +13,10 @@
 ## How to start
 
 ```base
-yarn
-yarn build
-yarn start
+pnpm
+pnpm i
+pnpm buil
+pnpm start
 ```
 
 > 開啟 <http://localhost:3000> 客戶端頁面
@@ -22,8 +24,43 @@ yarn start
 ## run to docker
 
 ```base
-docker run -d -p 3000:3000 --name three-render-viewer cainmaila/three-render
+docker run -d -p 3000:3000 -v model:[your models config] --name three-render-viewer cainmaila/three-render
 ```
+
+## 模型設定檔說明
+
+容器本身不包含模型檔案，使用時須要加掛 model 資料夾，並包含 config.json 模型檔案入口
+
+```json
+{
+  "models": [
+    {
+      "id": "tci",
+      "path": "https://localhost:5500/model/model/TciBio_20220311.fbx",
+      "type": "fbx"
+    },
+    {
+      "id": "gltf",
+      "path": "/model/warehouse/scene.gltf",
+      "initPosition": [0, 0, -20],
+      "type": "gltf"
+    }
+  ]
+}
+```
+
+| 欄位         | 說明用途                                                             |
+| ------------ | -------------------------------------------------------------------- |
+| id           | 入口的 key，例如 http://localhost:3000/viewer/[id]，可開啟當下該模型 |
+| path         | 為模型的靜態路徑，請注意 cors 問題                                   |
+| type         | 可支援 fbx、gltf 檔案格式                                            |
+| initPosition | 初始化鏡頭位置，如果沒有給會使用預設最適位置                         |
+
+## 環境變數
+
+| 變數 | 預設值 | 用途         |
+| ---- | ------ | ------------ |
+| PORT | 3000   | 對外服務端口 |
 
 or build in local.
 
@@ -31,7 +68,7 @@ or build in local.
 yarn
 yarn build
 docker build -t three-render .
-docker run -d -p 3000:3000 --name three-render-viewer three-render
+docker run -d -p 3000:3000 -v model:[your models config] --name three-render-viewer three-render
 ```
 
 ## 概念說明
