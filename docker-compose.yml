@@ -4,6 +4,8 @@ services:
     image: cainmaila/three-render
     ports:
       - 3000:3000
+    volumes:
+      - your-config-in-model:/model
     deploy:
       resources:
         reservations:

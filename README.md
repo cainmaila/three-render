@@ -24,7 +24,7 @@ pnpm start
 ## run to docker
 
 ```base
-docker run -d -p 3000:3000 -v model:[your models config] --name three-render-viewer cainmaila/three-render
+docker run -d -p 3000:3000 -v [your models config]:model --name three-render-viewer cainmaila/three-render:1.0.0
 ```
 
 ## 模型設定檔說明
@@ -69,6 +69,28 @@ yarn
 yarn build
 docker build -t three-render .
 docker run -d -p 3000:3000 -v model:[your models config] --name three-render-viewer three-render
+```
+
+##
+
+建議使用 docker-compose.yml 啟動才會支援顯示卡
+
+```
+services:
+  three-render-viewer:
+    container_name: three-render-viewer
+    image: cainmaila/three-render
+    ports:
+      - 3000:3000
+    volumes:
+      - your-config-in-model:/model
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 ```
 
 ## 概念說明

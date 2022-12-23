@@ -1,8 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { name, version } from './package.json';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    __APP_NAME__: JSON.stringify(name),
+    __APP_VERSION__: JSON.stringify(version),
+  },
   server: {
     host: '0.0.0.0',
     port: 3000,
