@@ -86,7 +86,13 @@ function Render() {
           sokcetRef.current?.emit('modelReady', { path: modelMeta?.path });
         }),
       )
-      .subscribe(() => console.info('🤖 render start'));
+      .subscribe({
+        error: (errorMessage) => {
+          console.error(`⁉️ ${errorMessage}`);
+          sokcetRef.current?.emit('error', { errorMessage });
+        },
+        next: () => console.info('🤖 render start'),
+      });
   }, [modelMeta]);
 
   //cameraState 渲染圖

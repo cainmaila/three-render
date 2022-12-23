@@ -22,6 +22,10 @@ function socketServer(httpServer) {
         socket.imReady = true; //完成了XD
         console.log('👍 model Ready', path);
       });
+      socket.on('error', ({ errorMessage }) => {
+        socket.errorMessage = errorMessage; //錯誤
+        console.error(`⁉️ ${errorMessage}`);
+      });
     });
     socket.on('client', ({ tag }) => {
       const renderSocket = renderMap.get(tag);
@@ -61,5 +65,8 @@ socketServer.hasTag = function (tag) {
 };
 socketServer.isReady = function (tag) {
   return !!renderMap.get(tag)?.imReady;
+};
+socketServer.isError = function (tag) {
+  return renderMap.get(tag)?.errorMessage;
 };
 module.exports = socketServer;

@@ -15,16 +15,26 @@ export default ({ path, type }: I_ModelMeta) => {
   return new Observable((subscriber) => {
     switch (type) {
       case MODEL_TYPE.FBX:
-        loaderFBX.load(path, (model) => {
-          subscriber.next(model);
-          subscriber.complete();
-        });
+        loaderFBX.load(
+          path,
+          (model) => {
+            subscriber.next(model);
+            subscriber.complete();
+          },
+          () => {},
+          (error) => subscriber.error(error.message),
+        );
         break;
       case MODEL_TYPE.GLTF:
-        loaderGLTF.load(path, ({ scene: model }) => {
-          subscriber.next(model);
-          subscriber.complete();
-        });
+        loaderGLTF.load(
+          path,
+          ({ scene: model }) => {
+            subscriber.next(model);
+            subscriber.complete();
+          },
+          () => {},
+          (error) => subscriber.error(error.message),
+        );
         break;
     }
   });

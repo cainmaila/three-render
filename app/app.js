@@ -26,12 +26,19 @@ new socketServer(server);
 
 /* 確認開啟render */
 app.get('/load/:id', (req, res) => {
-  const model = modelsConfig.models.find((model) => model.id === req.params.id);
-  if (!model) {
+  const model = {
+    ...modelsConfig.models.find((model) => model.id === req.params.id),
+  };
+  if (!model?.type) {
     res.status(404).send(404);
   } else if (socketServer.hasTag(req.params.id)) {
+    model.error = socketServer.isError(req.params.id);
     delete model.path;
-    res.send(socketServer.isReady(req.params.id) ? model : 'loading');
+    if (model.error) {
+      res.send(model);
+    } else {
+      res.send(socketServer.isReady(req.params.id) ? model : 'loading');
+    }
   } else {
     //還沒開render
     openPage(`http://localhost:${PORT}/render/${req.params.id}`);

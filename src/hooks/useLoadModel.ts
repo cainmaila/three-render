@@ -3,6 +3,7 @@
 import axios from 'axios-observable/dist/axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useViewerPageState, VIEWER_PAGE_STATE } from './pageState';
 import { I_ModelMeta_v2 } from './useModelPath';
 
 const LOADNG = 'loading';
@@ -12,6 +13,8 @@ const useLoadModel = () => {
   const { model } = useParams(); //router params
   const [retry, setRetry] = useState(0);
   const [modelMeta, setModelMeta] = useState<I_ModelMeta_v2 | undefined>();
+  const { setSiewerPageState, setViewerPageStateMessage } =
+    useViewerPageState();
   useEffect(() => {
     if (retry === 0) return;
     axios.get(`/load/${model}`).subscribe({
@@ -21,15 +24,28 @@ const useLoadModel = () => {
             setRetry(retry + 1);
           }, WATTING);
         } else {
-          setModelMeta(data);
+          if (data.error) {
+            console.error('⁉️', data);
+            setViewerPageStateMessage(data?.error);
+            setSiewerPageState(VIEWER_PAGE_STATE.ERROR);
+          } else {
+            setModelMeta(data);
+            setSiewerPageState(VIEWER_PAGE_STATE.VIEW);
+          }
         }
       },
-      error: (e) => console.error(e),
+      error: (e) => {
+        setViewerPageStateMessage(e.message);
+        setSiewerPageState(VIEWER_PAGE_STATE.ERROR);
+      },
     });
   }, [retry]);
   useEffect(() => {
+    setSiewerPageState(VIEWER_PAGE_STATE.LOADING);
     setRetry(1);
-    return () => {};
+    return () => {
+      setSiewerPageState(VIEWER_PAGE_STATE.INIT);
+    };
   }, [model]);
 
   return { modelMeta };
