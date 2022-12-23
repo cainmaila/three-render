@@ -1,11 +1,11 @@
 services:
   three-render-viewer:
     container_name: three-render-viewer
-    image: cainmaila/three-render
+    image: cainmaila/three-render:1.0.0
     ports:
       - 3000:3000
     volumes:
-      - your-config-in-model:/model
+      - C:\Users\maxca\OneDrive\桌面\model:/model
     deploy:
       resources:
         reservations:

@@ -93,6 +93,10 @@ services:
               capabilities: [gpu]
 ```
 
+```
+docker-compose up -d
+```
+
 ## 概念說明
 
 基於瀏覽器的 threejs webGL 渲染 viewerport [render 頁面]，期間透過 websocket 與多個客戶端交互場景狀態與渲染結果(bsae64 webp image)，由於操作模型只有一個，不會造成多開的記憶體浪費，渲染方法可自行控制，架構輕巧適合使用於專案項目
