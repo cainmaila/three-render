@@ -1,5 +1,5 @@
 export const CONFUG_PATH = '/config.json';
-export const DEF_FOV = 60;
+export const DEF_FOV = 45;
 
 export enum MODEL_TYPE {
   FBX = 'fbx',
