@@ -3,6 +3,8 @@ const cors = require('cors');
 const http = require('http');
 const path = require('path');
 const compression = require('compression');
+const axios = require('axios');
+
 function shouldCompress(req, res) {
   if (req.headers['x-no-compression']) {
     // don't compress responses with this request header
@@ -13,13 +15,37 @@ function shouldCompress(req, res) {
 const socketServer = require('./socketServer');
 
 const PORT = process.env.PORT || 3030;
+const configFile = process.env.CONFIG || 'config.json';
+const configPath = `http://localhost:${PORT}/${configFile}`;
 const app = express().use('*', cors());
 app.use(compression({ filter: shouldCompress }));
+
+axios
+  .get(configPath)
+  .then((res) => {
+    modelsConfig = res.data;
+  })
+  .catch((err) => {
+    console.warn('⁉️config not found!');
+  });
+
+app.get('/reload', (req, res) => {
+  axios
+    .get(configPath)
+    .then(({ data }) => {
+      modelsConfig = data;
+      res.json(modelsConfig);
+    })
+    .catch((err) => {
+      res.status(404).json(err.message);
+    });
+});
+
 const dist = path.join(__dirname, '../', 'dist');
 app.use(express.static(dist));
 const model = path.join(__dirname, '../', 'model');
 app.use(express.static(model));
-const modelsConfig = require('../model/config.json');
+let modelsConfig = { models: [] };
 
 const server = http.createServer(app);
 new socketServer(server);

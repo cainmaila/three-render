@@ -25,6 +25,9 @@ export default defineConfig({
       '/load': {
         target: 'http://localhost:3030',
       },
+      '/reload': {
+        target: 'http://localhost:3030',
+      },
     },
   },
   plugins: [react()],
